@@ -1,6 +1,5 @@
 #!/bin/zsh
 
-
 #### COLORS ####
 C=$(printf '\033')
 RED="${C}[1;31m"
@@ -85,8 +84,8 @@ function softwareupdate() {
 	else
 		echo "$Y Already have LinPEAS & WinPEAS... continuing $NC"
 	fi
-	
-	if [[ ! -f "/home/kali/Downloads/LinEnum.sh" ]]; then
+
+	if [[ ! -f "/usr/local/bin/LinEnum.sh" ]]; then
 		wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh -O /home/kali/Downloads/LinEnum.sh
 		sudo ln -s /home/kali/Downloads/LinEnum.sh /usr/local/bin/
 	else
