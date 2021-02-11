@@ -22,8 +22,10 @@ echo "$NC"
 # SYSTEM LEVEL UPDATES & INSTALLS
 function systemupdate() {
 	cd /home/kali/Downloads
+	wget -qO https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
+	echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+	sudo apt install python3-pip -y
 	sudo apt update -y
-	sudo apt install -y
 	sudo apt upgrade -y
 	sudo apt upgrade -y
 	sudo apt autoremove -y
@@ -37,7 +39,7 @@ function softwareupdate() {
 	echo "$Y Beginning software installs & updates.. $NC"
 	echo ""
 
-	sudo apt install python3-pip -y
+	sudo apt-get install sublime-text -y
 	sudo apt install seclists -y
 	sudo apt install gobuster -y
 	sudo apt install crackmapexec -y
@@ -46,7 +48,13 @@ function softwareupdate() {
 	sudo apt install smbmap -y
 	sudo apt install wfuzz -y
 	sudo apt install yersinia -y
-	pip install one-lin3r
+	sudo apt install bloodhound -y
+	sudo apt install -y
+	pip3 install one-lin3r
+	pip3 install bloodhound
+	sudo mkdir -p /usr/share/neo4j/logs
+	sudo touch /usr/share/neo4j/logs/neo4j.log
+	neo4j start
 
 	if [[ ! -f "/usr/local/bin/one-lin3r" ]]; then
 		sudo ln -s /home/kali/.local/bin/one-lin3r /usr/local/bin/
@@ -63,7 +71,7 @@ function softwareupdate() {
 		cp /home/kali/Downloads/nmap-vulners/vulners.nse /usr/share/nmap/scripts/vulners.nse
 	fi
 	
-	if [[ ! -d /home/kali/Downloads/nmapAutomator ]]; then
+	if [[ ! -d "/home/kali/Downloads/nmapAutomator" ]]; then
 		git clone https://github.com/21y4d/nmapAutomator
 		chmod +x /home/kali/Downloads/nmapAutomator/nmapAutomator.sh
 		echo "nmapAutomator is now executable"
@@ -82,6 +90,14 @@ function softwareupdate() {
 	if [[ ! -d "/home/kali/Downloads/privilege-escalation-awesome-scripts-suite" ]]; then
 		git clone https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite
 		mv "/home/kali/Downloads/privilege-escalation-awesome-scripts-suite" "/home/kali/Downloads/PEAS"
+	else
+		echo "$Y Already have LinPEAS & WinPEAS... continuing $NC"
+	fi
+
+	if [[ ! -d "/home/kali/Downloads/mitm6" ]]; then
+		git clone https://github.com/fox-it/mitm6
+		pip3 install -r ~/home/kali/Downloads/mitm6/requirements.txt
+		python3 ~/home/kali/Downloads/mitm6/setup.py install
 	else
 		echo "$Y Already have LinPEAS & WinPEAS... continuing $NC"
 	fi
@@ -107,6 +123,8 @@ function softwareupdate() {
 	else:
 		echo "$Y Already have vlan-hopping.... continuing"
 	fi
+
+
 	# TOOL UPDATES & SETUPS
 	echo "$Y Updating searchsploit database...$NC"
 	sudo searchsploit -u
