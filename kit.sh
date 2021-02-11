@@ -50,12 +50,15 @@ function softwareupdate() {
 	sudo apt install wfuzz -y
 	sudo apt install yersinia -y
 	sudo apt install bloodhound -y
+	sudo apt install subfinder
+	sudo apt install tilix
 	sudo apt install -y
 	pip3 install one-lin3r
+	pip3 install ptftpd
 	pip3 install bloodhound
 	sudo mkdir -p /usr/share/neo4j/logs
 	sudo touch /usr/share/neo4j/logs/neo4j.log
-	neo4j start
+	sudo neo4j start
 
 	if [[ ! -f "/usr/local/bin/one-lin3r" ]]; then
 		sudo ln -s /home/kali/.local/bin/one-lin3r /usr/local/bin/
@@ -98,7 +101,7 @@ function softwareupdate() {
 	if [[ ! -d "/home/kali/Downloads/mitm6" ]]; then
 		git clone https://github.com/fox-it/mitm6
 		pip3 install -r ~/home/kali/Downloads/mitm6/requirements.txt
-		python3 ~/home/kali/Downloads/mitm6/setup.py install
+		python3 /home/kali/Downloads/mitm6/setup.py install
 	else
 		echo "$Y Already have LinPEAS & WinPEAS... continuing $NC"
 	fi
