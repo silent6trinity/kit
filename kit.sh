@@ -39,7 +39,7 @@ function softwareupdate() {
 	cd /home/kali/Downloads
 	echo "$Y Beginning software installs & updates.. $NC"
 	echo ""
-
+	sudo apt-get install python-pip -y
 	sudo apt-get install sublime-text -y
 	sudo apt install seclists -y
 	sudo apt install gobuster -y
