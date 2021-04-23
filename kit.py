@@ -1,71 +1,64 @@
 #! /usr/bin/python3
-# Attempt to recreate kit.sh with python - This is meant for linux
-# For the time being, a lot of the calls are going to be invoked by os.system()
-## This isn't safe/smart, but time...burnout....etc
 
-# TODO: Instead of individual lines for package installs, why not iterate through
-##       a list of them instead? Or better yet, maybe pull them from a text file
 import os
 from termcolor import colored
 
-user = os.getlogin()
-sublime = 'deb https://download.sublimetext.com/ apt/stable/'
-
+# Maybe sometime later we'll take this and make a separate file, but for now, I want everything in 
+## one single executable file
 
 #TODO: Make this less error prone - some linux flavors don't have /home at the root
 #TODO: Check to make sure we're in the Downloads directory before installs & downloads - otherwise bail
 #TODO: Grab the neo4j database info, make sure its running and provide to user
 #TODO: Grab the neo4j webserver & the associated port
-
+#TODO: Adjust the dir/file checks to local, rather than abspath
+#TODO: Use a list of github repos and iterate through them, rather than this mess
+#TODO: Install assetfinder
+#TODO: After install, rename the privilege-escalation-suite dir to PEAS
 #TODO: Ensure that the Metasploit database service is up & running, provide info to the user
-# cd_dl = f"/home/{user}/Downloads/"
+# sudo systemctl start postgresql
+# <check to ensure the service is running now>
+# msfdb init
 
+apt_packages = ['seclists','gobuster','metasploit-framework',
+                'crackmapexec','snmpcheck','enum4linux','smbmap','wfuzz','sublime-text',
+                'yersinia','bloodhound','subfinder','tilix']
+
+pypi_packages = ['one-lin3r','ptftpd','bloodhound']
+
+sublime = 'deb https://download.sublimetext.com/ apt/stable/'
+user = os.getlogin()
 
 def system_update():
+    os.system(f"cd /home/{user}/Downloads/")
+    print(colored("Beginning System updates, please wait...", 'blue'))
     os.system('sudo apt install python3-pip -y')
     os.system('sudo apt update -y')
     os.system('sudo apt upgrade -y')
     os.system('sudo apt upgrade -y')
     os.system('sudo apt autoremove -y')
-    print("")
     print(colored("Finished SYSTEM setup", 'green'))
-    print("")
     return()
 
+
+
 def software_update():
-    print("")
+    os.system(f"cd /home/{user}/Downloads/")
     print(colored("Beginning Software install(s) & updates, please wait...", 'blue'))
     print("")
-
     os.system('wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg\
                 | sudo apt-key add -')
     os.system('sudo apt-get install apt-transport-https')
     os.system(f'echo {sublime} | sudo tee /etc/apt/sources.list.d/sublime-text.list')
-    os.system('sudo apt-get install sublime-text -y')
-    os.system('sudo apt install seclists -y')
-    os.system('sudo apt install gobuster -y')
-    os.system('sudo apt install metasploit-framework -y')
-    os.system('sudo apt install crackmapexec -y')
-    os.system('sudo apt install snmpcheck -y')
-    os.system('sudo apt install enum4linux -y')
-    os.system('sudo apt install smbmap -y')
-    os.system('sudo apt install wfuzz -y')
-    os.system('sudo apt install yersinia -y')
-    os.system('sudo apt install bloodhound -y')
-    os.system('sudo apt install subfinder')
-    os.system('sudo apt install tilix')
-    os.system('sudo apt install -y')
-    os.system('pip3 install one-lin3r')
-    os.system('pip3 install ptftpd')
-    os.system('pip3 install bloodhound')
+    for pkg in apt_packages:
+        os.system(f'sudo apt install {pkg} -y')
+        os.system('sudo apt install -y')
+        print('done')
+    for pkg in pypi_packages:
+        os.system(f'pip3 install {pkg}')
     os.system('sudo mkdir -p /usr/share/neo4j/logs')
     os.system('sudo touch /usr/share/neo4j/logs/neo4j.log')
     os.system('sudo neo4j start')
-    # now to check if the software already exists...
-    # Change 'path' so that it's either dynamic or ... will actually work
-    # maybe even make the check a function later on...
 
-# TODO: Adjust the dir/file checks to local, rather than abspath
     ### BEGIN IF/ELSE CHECKS FOR SOFTWARE ####
     if os.path.exists("/usr/local/bin/one-lin3r"):
         print(colored("one-lin3r already exists in /usr/local/bin already exists in /usr/local/bin, continuing...\n", 'green'))
@@ -77,18 +70,21 @@ def software_update():
         print(colored("nmap-vulners already installed, continuing...\n", 'green'))
     else:
         os.system('git clone https://github.com/vulnersCom/nmap-vulners')
-        os.system(f'sudo cp /home/{user}/Downloads/nmap-vulners/vulners.nse /usr/share/nmap/scripts/vulners.nse')
+        if not os.path.exists('/usr/share/nmap/scripts/vulners.nse'):    
+            os.system(f'sudo cp /home/{user}/Downloads/nmap-vulners/vulners.nse /usr/share/nmap/scripts/vulners.nse')
+        else:
+            print(colored("vulners.nse has been downloaded and copied into the nmap scripts DB", 'green'))
 
     if os.path.exists(f'/home/{user}/Downloads/nmapAutomator'):
         print(colored("nmapAutomator already installed, continuing...", 'green'))
-        if not os.path.exists('/usr/local/bin/nmapAutomator.sh'):
+        if not os.file.exists('/usr/local/bin/nmapAutomator.sh'):
             os.system(f'sudo ln -s /home/{user}/Downloads/nmapAutomator/nmapAutomator.sh /usr/local/bin/')
         else:
             print(colored("Already have nmapAutomator in local binaries, continuing...\n", 'green'))
     else:
         os.system('git clone https://github.com/21y4d/nmapAutomator')
         os.system(f'chmod +x /home/{user}/Downloads/nmapAutomator/nmapAutomator.sh')
-        print('nmapAutomator is now dynamically executable')
+        print(colored('nmapAutomator is now dynamically executable', 'green'))
 
 
     if os.path.exists(f'/home/{user}/Downloads/Impacket'):
@@ -96,7 +92,6 @@ def software_update():
     else:
         os.system('git clone https://github.com/SecureAuthCorp/Impacket')
 
-        #TODO: After install, rename the directory, because... do I need to justify?
     if os.path.exists(f'/home/{user}/Downloads/privilege-escalation-awesome-scripts-suite'):
         print(colored("LinPEAS & WinPEAS already installed, continuing...\n", 'green'))
     else:
@@ -151,19 +146,6 @@ def software_update():
     return()
     #### END TOOL UPDATES & SETUPS ####
 
-
-#Wrap the functions with the user choices now
-def all():
-    os.system(f"cd /home/{user}/Downloads/")
-    system_update()
-    software_update()
-    return()
-
-def tools():
-    os.system(f"cd /home/{user}/Downloads/")
-    software_update()
-    return()
-
 def main():
     print(colored("Automated Kit buildout script\n", 'blue'))
     print("Would you like to install ALL or just the TOOLS?\n")
@@ -171,9 +153,10 @@ def main():
     choice = input()
     choice = str(choice)
     if choice == "ALL":
-        all()
+        system_update()
+        software_update()
     elif choice == "TOOLS":
-        tools()
+        software_update()
     else:
         print("You had one simple choice and you already screwed that up")
 
