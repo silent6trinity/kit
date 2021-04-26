@@ -3,7 +3,7 @@
 import os
 from termcolor import colored
 
-# Maybe sometime later we'll take this and make a separate file, but for now, I want everything in 
+# Maybe sometime later we'll take this and make a separate file, but for now, I want everything in
 ## one single executable file
 
 #TODO: Make this less error prone - some linux flavors don't have /home at the root
@@ -19,10 +19,11 @@ from termcolor import colored
 # <check to ensure the service is running now>
 # msfdb init
 
+#ADD APT PACKAGES TO ME
 apt_packages = ['seclists','gobuster','metasploit-framework',
                 'crackmapexec','snmpcheck','enum4linux','smbmap','wfuzz','sublime-text',
                 'yersinia','bloodhound','subfinder','tilix']
-
+#ADD PyPi PACLAGES TO ME
 pypi_packages = ['one-lin3r','ptftpd','bloodhound']
 
 sublime = 'deb https://download.sublimetext.com/ apt/stable/'
@@ -39,25 +40,27 @@ def system_update():
     print(colored("Finished SYSTEM setup", 'green'))
     return()
 
-
-
-def software_update():
-    os.system(f"cd /home/{user}/Downloads/")
-    print(colored("Beginning Software install(s) & updates, please wait...", 'blue'))
-    print("")
+def sublime_download():
     os.system('wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg\
                 | sudo apt-key add -')
     os.system('sudo apt-get install apt-transport-https')
     os.system(f'echo {sublime} | sudo tee /etc/apt/sources.list.d/sublime-text.list')
+
+
+def software_update():
+    os.system(f"cd /home/{user}/Downloads/")
+    print(colored("Beginning Software install(s) & updates, please wait...\n ", 'blue'))
+    sublime_download()
     for pkg in apt_packages:
         os.system(f'sudo apt install {pkg} -y')
         os.system('sudo apt install -y')
-        print('done')
+
     for pkg in pypi_packages:
         os.system(f'pip3 install {pkg}')
     os.system('sudo mkdir -p /usr/share/neo4j/logs')
     os.system('sudo touch /usr/share/neo4j/logs/neo4j.log')
     os.system('sudo neo4j start')
+    # Now dump/grab the port/service info for neo4j and give to the user
 
     ### BEGIN IF/ELSE CHECKS FOR SOFTWARE ####
     if os.path.exists("/usr/local/bin/one-lin3r"):
@@ -65,12 +68,12 @@ def software_update():
     else:
         os.system(f"sudo ln -s /home/{user}/.local/bin/one-lin3r /usr/local/bin")
 
-    if os.path.exists("/home/$user/Downloads/nmap-vulners"):
+    if os.path.exists(f"/home/{user}/Downloads/nmap-vulners"):
         os.system(f'sudo cp /home/{user}/Downloads/nmap-vulners/vulners.nse /usr/share/nmap/scripts/vulners.nse')
         print(colored("nmap-vulners already installed, continuing...\n", 'green'))
     else:
         os.system('git clone https://github.com/vulnersCom/nmap-vulners')
-        if not os.path.exists('/usr/share/nmap/scripts/vulners.nse'):    
+        if not os.path.exists('/usr/share/nmap/scripts/vulners.nse'):
             os.system(f'sudo cp /home/{user}/Downloads/nmap-vulners/vulners.nse /usr/share/nmap/scripts/vulners.nse')
         else:
             print(colored("vulners.nse has been downloaded and copied into the nmap scripts DB", 'green'))
@@ -161,4 +164,4 @@ def main():
         print("You had one simple choice and you already screwed that up")
 
 if __name__ == "__main__":
-    main()    
+    main()
