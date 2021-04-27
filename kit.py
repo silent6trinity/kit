@@ -61,12 +61,14 @@ def software_update():
     os.system('sudo touch /usr/share/neo4j/logs/neo4j.log')
     os.system('sudo neo4j start')
     # Now dump/grab the port/service info for neo4j and give to the user
+    tool_init()
 
     ### BEGIN IF/ELSE CHECKS FOR SOFTWARE ####
-    if os.path.exists("/usr/local/bin/one-lin3r"):
-        print(colored("one-lin3r already exists in /usr/local/bin already exists in /usr/local/bin, continuing...\n", 'green'))
-    else:
+
+    if not os.path.exists("/usr/local/bin/one-lin3r"):
         os.system(f"sudo ln -s /home/{user}/.local/bin/one-lin3r /usr/local/bin")
+    else:
+        print(colored("one-lin3r already exists in /usr/local/bin already exists in /usr/local/bin, continuing...\n", 'green'))
 
     if os.path.exists(f"/home/{user}/Downloads/nmap-vulners"):
         os.system(f'sudo cp /home/{user}/Downloads/nmap-vulners/vulners.nse /usr/share/nmap/scripts/vulners.nse')
@@ -80,7 +82,7 @@ def software_update():
 
     if os.path.exists(f'/home/{user}/Downloads/nmapAutomator'):
         print(colored("nmapAutomator already installed, continuing...", 'green'))
-        if not os.file.exists('/usr/local/bin/nmapAutomator.sh'):
+        if not os.path.exists('/usr/local/bin/nmapAutomator.sh'):
             os.system(f'sudo ln -s /home/{user}/Downloads/nmapAutomator/nmapAutomator.sh /usr/local/bin/')
         else:
             print(colored("Already have nmapAutomator in local binaries, continuing...\n", 'green'))
@@ -108,6 +110,30 @@ def software_update():
                     -O /home/{user}/Downloads/LinEnum.sh')
         os.system(f'sudo ln -s /home/{user}/Downloads/LinEnum.sh /usr/local/bin/')
 
+    if os.path.exists(f'/usr/local/go') and os.path.exists(f'/home/{user}/go/bin/assetfinder'):
+        print(colored('GO already is installed at /usr/local/go, continuing...', 'green'))
+    else:
+        os.system('wget https://golang.org/dl/go1.16.3.linux-amd64.tar.gz')
+        os.system('sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz')
+        os.system('export PATH=$PATH:/usr/local/go/bin')
+        os.system('source $HOME/.profile && go version')
+        print('Attempting to utilize GO to grab & install assetfinder now...\n')
+        os.system('go get -u github.com/tomnomnom/assetfinder')
+        print(colored('If we have gotten to here, this is a good sign....', 'red'))
+
+        #### END IF ELSE CHECKS #####
+
+    ### TOOL UPDATES & SETUPS ###
+    print('Updating searchsploit DB....\n')
+    os.system('sudo searchsploit -u')
+    print(colored("Finished searchsploit update", 'green'))
+    print("Updating locate DB...\n")
+    os.system('sudo updatedb')
+    print(colored("Finished locate DB update \n", 'green'))
+    print("Updating nmap script database\n")
+    os.system('sudo nmap --script-updatedb')
+    print(colored('nmap script database updated \n', 'green'))
+
 
     if os.path.exists(f'/home/{user}/Downloads/evil-winrm'):
         print(colored("evil-winRM already installed, continuing...\n", 'green'))
@@ -125,18 +151,6 @@ def software_update():
         print(colored("VLAN-Hopping already installed, continuing...", 'green'))
     else:
         os.system('git clone https://github.com/nccgroup/vlan-hopping.git')
-        #### END IF ELSE CHECKS #####
-
-    ### TOOL UPDATES & SETUPS ###
-    print("Updating searchsploit DB....\n")
-    os.system('sudo searchsploit -u')
-    print(colored("Finished searchsploit update", 'green'))
-    print("Updating locate DB...\n")
-    os.system('sudo updatedb')
-    print(colored("Finished locate DB update \n", 'green'))
-    print("Updating nmap script database\n")
-    os.system('sudo nmap --script-updatedb')
-    print(colored("nmap script database updated \n", 'green'))
 
     print("Checking if rockyou has been unzipped...")
     if os.path.isfile('/usr/share/wordlists/rockyou.txt.gz'):
@@ -148,6 +162,12 @@ def software_update():
     print(colored("Software & Tool updates have been completed!", 'green'))
     return()
     #### END TOOL UPDATES & SETUPS ####
+
+def tool_init():
+    os.system('sudo systemctl start postgresql')
+    os.system('systemctl status postgresql')
+    os.system('sudo msfdb init')
+
 
 def main():
     print(colored("Automated Kit buildout script\n", 'blue'))
