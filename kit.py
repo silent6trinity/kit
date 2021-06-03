@@ -32,6 +32,8 @@ user = os.getlogin()
 def system_update():
     os.system(f"cd /home/{user}/Downloads/")
     print(colored("Beginning System updates, please wait...", 'blue'))
+    # This isn't a system tool, but it's a quickfix for now
+    sublime_download()
     os.system('sudo apt install python3-pip -y')
     os.system('sudo apt update -y')
     os.system('sudo apt upgrade -y')
@@ -50,7 +52,6 @@ def sublime_download():
 def software_update():
     os.system(f"cd /home/{user}/Downloads/")
     print(colored("Beginning Software install(s) & updates, please wait...\n ", 'blue'))
-    sublime_download()
     for pkg in apt_packages:
         os.system(f'sudo apt install {pkg} -y')
         os.system('sudo apt install -y')
