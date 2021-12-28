@@ -23,6 +23,7 @@ from termcolor import colored
 apt_packages = ['seclists','gobuster','metasploit-framework',
                 'crackmapexec','snmpcheck','enum4linux','smbmap','wfuzz','sublime-text',
                 'yersinia','bloodhound','subfinder','tilix']
+
 #ADD PyPi PACLAGES TO ME
 pypi_packages = ['one-lin3r','ptftpd','bloodhound']
 
@@ -30,7 +31,8 @@ sublime = 'deb https://download.sublimetext.com/ apt/stable/'
 user = os.getlogin()
 
 def system_update():
-    os.system(f"cd /home/{user}/Downloads/")
+    #os.system(f"cd /opt/")
+    os.system("/opt")
     print(colored("Beginning System updates, please wait...", 'blue'))
     # This isn't a system tool, but it's a quickfix for now
     sublime_download()
@@ -50,7 +52,7 @@ def sublime_download():
 
 
 def software_update():
-    os.system(f"cd /home/{user}/Downloads/")
+    os.system(f"cd /opt/")
     print(colored("Beginning Software install(s) & updates, please wait...\n ", 'blue'))
     for pkg in apt_packages:
         os.system(f'sudo apt install {pkg} -y')
@@ -67,38 +69,38 @@ def software_update():
     ### BEGIN IF/ELSE CHECKS FOR SOFTWARE ####
 
     if not os.path.exists("/usr/local/bin/one-lin3r"):
-        os.system(f"sudo ln -s /home/{user}/.local/bin/one-lin3r /usr/local/bin")
+        os.system(f"sudo ln -s /opt/.local/bin/one-lin3r /usr/local/bin")
     else:
         print(colored("one-lin3r already exists in /usr/local/bin already exists in /usr/local/bin, continuing...\n", 'green'))
 
-    if os.path.exists(f"/home/{user}/Downloads/nmap-vulners"):
-        os.system(f'sudo cp /home/{user}/Downloads/nmap-vulners/vulners.nse /usr/share/nmap/scripts/vulners.nse')
+    if os.path.exists(f"/opt/nmap-vulners"):
+        os.system(f'sudo cp /opt/nmap-vulners/vulners.nse /usr/share/nmap/scripts/vulners.nse')
         print(colored("nmap-vulners already installed, continuing...\n", 'green'))
     else:
         os.system('git clone https://github.com/vulnersCom/nmap-vulners')
         if not os.path.exists('/usr/share/nmap/scripts/vulners.nse'):
-            os.system(f'sudo cp /home/{user}/Downloads/nmap-vulners/vulners.nse /usr/share/nmap/scripts/vulners.nse')
+            os.system(f'sudo cp /opt/nmap-vulners/vulners.nse /usr/share/nmap/scripts/vulners.nse')
         else:
             print(colored("vulners.nse has been downloaded and copied into the nmap scripts DB", 'green'))
 
-    if os.path.exists(f'/home/{user}/Downloads/nmapAutomator'):
+    if os.path.exists(f'/opt/nmapAutomator'):
         print(colored("nmapAutomator already installed, continuing...", 'green'))
         if not os.path.exists('/usr/local/bin/nmapAutomator.sh'):
-            os.system(f'sudo ln -s /home/{user}/Downloads/nmapAutomator/nmapAutomator.sh /usr/local/bin/')
+            os.system(f'sudo ln -s /opt/nmapAutomator/nmapAutomator.sh /usr/local/bin/')
         else:
             print(colored("Already have nmapAutomator in local binaries, continuing...\n", 'green'))
     else:
         os.system('git clone https://github.com/21y4d/nmapAutomator')
-        os.system(f'chmod +x /home/{user}/Downloads/nmapAutomator/nmapAutomator.sh')
+        os.system(f'chmod +x /opt/nmapAutomator/nmapAutomator.sh')
         print(colored('nmapAutomator is now dynamically executable', 'green'))
 
 
-    if os.path.exists(f'/home/{user}/Downloads/Impacket'):
+    if os.path.exists(f'/opt/Impacket'):
         print(colored("Impacket is already installed, continuing...\n", 'green'))
     else:
         os.system('git clone https://github.com/SecureAuthCorp/Impacket')
 
-    if os.path.exists(f'/home/{user}/Downloads/privilege-escalation-awesome-scripts-suite'):
+    if os.path.exists(f'/opt/privilege-escalation-awesome-scripts-suite'):
         print(colored("LinPEAS & WinPEAS already installed, continuing...\n", 'green'))
     else:
         os.system('git clone https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite')
@@ -108,10 +110,27 @@ def software_update():
         print(colored("LinEnum already installed, continuing...\n", 'green'))
     else:
         os.system(f'wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh\
-                    -O /home/{user}/Downloads/LinEnum.sh')
-        os.system(f'sudo ln -s /home/{user}/Downloads/LinEnum.sh /usr/local/bin/')
+                    -O /opt/LinEnum.sh')
+        os.system(f'sudo ln -s /opt/LinEnum.sh /usr/local/bin/')
 
-    if os.path.exists(f'/usr/local/go') and os.path.exists(f'/home/{user}/go/bin/assetfinder'):
+    if os.path.exists(f'/opt/evil-winrm'):
+        print(colored("evil-winRM already installed, continuing...\n", 'green'))
+    else:
+        os.system('git clone https://github.com/HackPlayers/evil-winrm')
+
+
+    if os.path.exists(f'/opt/Enum4LinuxPy'):
+        print(colored("Enum4LinuxPy already installed, continuing...\n", 'green'))
+    else:
+        os.system('git clone https://github.com/0v3rride/Enum4LinuxPy')
+
+
+    if os.path.exists(f'/opt/vlan-hopping'):
+        print(colored("VLAN-Hopping already installed, continuing...", 'green'))
+    else:
+        os.system('git clone https://github.com/nccgroup/vlan-hopping.git')
+
+    if os.path.exists(f'/usr/local/go') and os.path.exists(f'/opt/go/bin/assetfinder'):
         print(colored('GO already is installed at /usr/local/go, continuing...', 'green'))
     else:
         os.system('wget https://golang.org/dl/go1.16.3.linux-amd64.tar.gz')
@@ -136,22 +155,6 @@ def software_update():
     print(colored('nmap script database updated \n', 'green'))
 
 
-    if os.path.exists(f'/home/{user}/Downloads/evil-winrm'):
-        print(colored("evil-winRM already installed, continuing...\n", 'green'))
-    else:
-        os.system('git clone https://github.com/HackPlayers/evil-winrm')
-
-
-    if os.path.exists(f'/home/{user}/Downloads/Enum4LinuxPy'):
-        print(colored("Enum4LinuxPy already installed, continuing...\n", 'green'))
-    else:
-        os.system('git clone https://github.com/0v3rride/Enum4LinuxPy')
-
-
-    if os.path.exists(f'/home/{user}/Downloads/vlan-hopping'):
-        print(colored("VLAN-Hopping already installed, continuing...", 'green'))
-    else:
-        os.system('git clone https://github.com/nccgroup/vlan-hopping.git')
 
     print("Checking if rockyou has been unzipped...")
     if os.path.isfile('/usr/share/wordlists/rockyou.txt.gz'):
