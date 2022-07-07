@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-import os
+import os, re
 from simple_term_menu import TerminalMenu
 from termcolor import colored
 
@@ -26,15 +26,31 @@ from termcolor import colored
 
 #ADD APT PACKAGES TO ME
 #TODO: Update software to grab
-apt_packages = ['seclists','gobuster','metasploit-framework',
-                'crackmapexec','snmpcheck','enum4linux','smbmap','wfuzz','sublime-text',
-                'yersinia','bloodhound','subfinder','tilix']
+APT_PACKAGES = [
+    'seclists',
+    'gobuster',
+    'metasploit-framework',
+    'crackmapexec',
+    'snmpcheck','enum4linux',
+    'smbmap',
+    'wfuzz',
+    'sublime-text',
+    'yersinia',
+    'bloodhound',
+    'subfinder',
+    'tilix'
+]
 
-githubs = ['https://github.com/0v3rride/Enum4LinuxPy','https://github.com/RUB-NDS/PRET','https://github.com/nccgroup/vlan-hopping.git',
-            'https://github.com/HackPlayers/evil-winrm','https://github.com/SecureAuthCorp/Impacket','https://github.com/21y4d/nmapAutomator',
-            'https://github.com/vulnersCom/nmap-vulners']
+GITHUBS = [
+    'https://github.com/0v3rride/Enum4LinuxPy.git',
+    'https://github.com/RUB-NDS/PRET.git',
+    'https://github.com/nccgroup/vlan-hopping.git',
+    'https://github.com/HackPlayers/evil-winrm.git',
+    'https://github.com/SecureAuthCorp/Impacket.git',
+    'https://github.com/21y4d/nmapAutomator.git',
+    'https://github.com/vulnersCom/nmap-vulners.git'
+]
 
-gitfolders = ['Enum4LinuxPy','PRET','vlan-hopping','evil-winrm','Impacket','nmapAutomator']
 
 #ADD PyPi PACLAGES TO ME
 pypi_packages = ['one-lin3r','ptftpd','bloodhound','colorama','pysnmp']
@@ -85,14 +101,33 @@ def new_software_check():
     if not os.path.exists("/usr/local/bin/one-lin3r"):
         os.system(f"sudo ln -s /opt/.local/bin/one-lin3r /usr/local/bin")
     else:
-        print(colored("one-lin3r already exists in /usr/local/bin already exists in /usr/local/bin, continuing...\n", 'green'))
+        print(colored("one-lin3r already exists in /usr/local/bin, continuing...\n", 'green'))
 
 def software_check():
+
+    def is_repo_installed(repo_url):
+        if a_match := re.match(r"htts://.+/(.+)\.git", repo_url):
+            return os.path.exists(f"/opt/{a_match.group(1)}")
+        else:
+            print(colored(f'INVALID URL: {repo_url}', 'red'))
+            # Returning True here because if the url isn't valid, then we definitely don't want to try installing
+            return True
+
+
     os.system("cd /opt")
 #    if not os.path.exists("/usr/local/bin/one-lin3r"):
 #        os.system(f"sudo ln -s /opt/.local/bin/one-lin3r /usr/local/bin")
 #    else:
 #        print(colored("one-lin3r already exists in /usr/local/bin already exists in /usr/local/bin, continuing...\n", 'green'))
+
+
+    for git_url in GITHUBS:
+        print(f"Checking for local install of: {git_url}")
+        if is_repo_installed(git_url):
+            print(colored(f"Found in /opt continuing...\n"))
+        else:
+            os.system(f"git clone {git_url}")
+            print(colored("Repo cloned! Moving on...\n", "green"))
 
     if os.path.exists(f"/opt/nmap-vulners"):
         os.system(f'sudo cp /opt/nmap-vulners/vulners.nse /usr/share/nmap/scripts/vulners.nse')
@@ -181,7 +216,7 @@ def software_check():
 def software_update():
     os.system(f"cd /opt/")
     print(colored("Beginning Software install(s) & updates, please wait...\n ", 'blue'))
-    for pkg in apt_packages:
+    for pkg in APT_PACKAGES:
         os.system(f'sudo apt install {pkg} -y')
         os.system('sudo apt install -y')
 
@@ -317,7 +352,7 @@ def shell_creation():
 
 def test():
     """
-    for i in apt_packages:
+    for i in APT_PACKAGES:
         print(colored(f"Installing: {i}", 'blue'))
         os.system(f"sudo apt install {i}")
     """
