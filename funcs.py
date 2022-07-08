@@ -60,7 +60,7 @@ def msfdb_init():
 	os.system('sudo msfdb init')
 	print("MSF Database Initialized")
 
-def neo4j_init()
+def neo4j_init():
 	#TODO: Grab the port/service information and present to the user
 	os.system('sudo mkdir -p /usr/share/neo4j/logs')
 	os.system('sudo touch /usr/share/neo4j/logs/neo4j.log')
