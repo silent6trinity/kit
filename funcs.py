@@ -1,9 +1,10 @@
-import os,re
+import os,re,time
 from simple_term_menu import TerminalMenu
 from termcolor import colored
 
 #TODO: Alphabetize
 APT_PACKAGES = [
+	'apt-transport-https',
     'seclists',
     'golang-go',
     'gobuster',
@@ -27,7 +28,7 @@ GITHUBS = [
     'https://github.com/SecureAuthCorp/Impacket.git',
     'https://github.com/21y4d/nmapAutomator.git',
     'https://github.com/vulnersCom/nmap-vulners.git',
-    'https://github.com/rebootuser/LinEnum'
+    'https://github.com/rebootuser/LinEnum.git'
 ]
 #TODO: Actually grab these
 #TODO: REGEX out the release date so we always swipe the newest editions
@@ -37,7 +38,12 @@ PEAS = [
 	'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEAS.bat',
 	'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEASany.exe']
 
-PYPI_PACKAGES = ['one-lin3r','ptftpd','bloodhound','colorama','pysnmp']
+PYPI_PACKAGES = [
+	'one-lin3r',
+	'ptftpd',
+	'bloodhound',
+	'colorama',
+	'pysnmp']
 
 # ---- Begin Function declarations -----
 
@@ -66,20 +72,6 @@ def neo4j_init():
 	os.system('sudo touch /usr/share/neo4j/logs/neo4j.log')
 	os.system('sudo neo4j start')
 	print("Neo4j service initialized")
-
-def nmap_update():
-	print("Updating nmap script database\n")
-	os.system('sudo nmap --script-updatedb')
-	print(colored('nmap script database updated \n', 'green'))
-
-def rockyou():
-	print("Checking if rockyou has been unzipped...")
-	if os.path.isfile('/usr/share/wordlists/rockyou.txt.gz'):
-		print("It hasn't been decompressed - decompressing now...\n")
-		os.system('sudo gunzip /usr/share/wordlists/rockyou.txt.gz')
-	else:
-		print(colored("rockyou has already been unzipped \n", 'green'))
-	print(colored("Software & Tool updates have been completed!", 'green'))
 
 def shell_creation():
 	#ip_addr = os.popen('ip addr show eth0 | grep "\\<inet\\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
@@ -118,41 +110,32 @@ def tool_install():
 
 	# begin installing pypi & apt packages
 	for pkg in APT_PACKAGES:
-		os.system(f'sudo apt install {pkg} -y')
-		os.system('sudo apt install -y')
-		print(colored(f'APT {pkg} successfully installed by script', green))
+		os.system(f'sudo apt install {pkg} -y 1>/dev/null')
+		os.system('sudo apt install -y 1>/dev/null')
+		print(colored(f'APT {pkg} successfully installed by script', "green"))
 	for pkg in PYPI_PACKAGES:
-		os.system(f'pip3 install {pkg}')
-		print(colored(f'PYPI {pkg} successfully installed by script', green))
+		os.system(f'pip3 install {pkg} 1>/dev/null')
+		print(colored(f'PYPI {pkg} successfully installed by script', "green"))
 	print("tool_install() Completed")
 	return True
-
-
-#TODO: Determine if this needs tool_install()
-#def software_update():
-#	print(colored("Beginning Software install(s) & updates, please wait...\n ", 'blue'))
-#	for pkg in APT_PACKAGES:
-#		os.system(f'sudo apt install {pkg} -y')
-#		os.system('sudo apt install -y')
-#	for pkg in PYPI_PACKAGES:
-#		os.system(f'pip3 install {pkg}')
-#	msfdb_init()
-#	neo4j_init()
 
 def sublime_download():
 	os.system('wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg\
 				| sudo apt-key add -')
-	os.system('sudo apt-get install apt-transport-https')
 	os.system(f'echo {sublime} | sudo tee /etc/apt/sources.list.d/sublime-text.list')
 
 def system_update():
 	print(colored("Beginning System updates, please wait...", 'blue'))
-	# This isn't a system tool, but it's a quickfix for now
+	os.system('sudo apt-get install apt-transport-https') # This is to ensure sublime_download() wont cause an error
+	sublime_download()
+	tool_install()
+	tool_update()
 	os.system('sudo apt install python3-pip -y')
 	os.system('sudo apt update -y')
 	os.system('sudo apt upgrade -y')
 	os.system('sudo apt upgrade -y')
 	os.system('sudo apt autoremove -y')
+
 	print(colored("Finished SYSTEM setup", 'green'))
 	return()
 
@@ -161,7 +144,7 @@ def terminal_selection():
 	main_menu_title = "Automated Kit Buildout Script, Select ALL, TOOLS, or SHELL \n"
 	main_menu_cursor = "-> "
 
-	options = ["ALL", "TOOLS", "SHELL", "TEST"]
+	options = ["ALL (UNTESTED)", "TOOLS", "SHELL (BROKEN)"]
 	# begin TUI Custom configuration(s)
 	terminal_menu = TerminalMenu(
 		options,
@@ -173,7 +156,7 @@ def terminal_selection():
 	if menu_entry_index == 0:
 		print(("Match Successful on ALL"))
 		system_update()
-		software_update()
+		#software_update()
 	elif menu_entry_index == 1:
 		print("Match successful on TOOLS")
 		#software_update()
@@ -181,31 +164,42 @@ def terminal_selection():
 		tool_update()
 		msfdb_init()
 		neo4j_init()
+		jon()
 		#go_install()
 	elif menu_entry_index == 2:
 		print("Match successful on SHELL")
 		shell_creation()
-	elif menu_entry_index == 3:
-		test()
+	#elif menu_entry_index == 3:
+	#	test()
 	else:
-		print("Match failed again")
+		print("Match failed.")
 
-def test():
-	"""
-	for i in APT_PACKAGES:
-		print(colored(f"Installing: {i}", 'blue'))
-		os.system(f"sudo apt install {i}")
-	"""
-	print("Checking if a list of things exist...")
-	for i in gitfolders:
-		if os.path.exists(f'/opt/{i}'):
-			print(colored(f"{i} already installed, continuing...\n", 'green'))
-		else:
-			print(colored(f"The software {i} either failed to be detected or doesn't exist", "red"))
+def jon():
+	print("Doing some work, here's a nice portrait, circa 2022 \n")
+	print("""\
+   -    \\O
+  -     /\\  
+ -   __/\\ `	
+    `    \\, (o)
+^^^^^^^^^^^`^^^^^^^^
+Ol' Jon, kickin' them rocks again	\n""")
 
 def tool_update():
+	def nmap_update():
+		print("Updating nmap script database\n")
+		os.system('sudo nmap --script-updatedb 1>/dev/null')
+		print(colored('nmap script database updated \n', 'green'))
+
+	def rockyou():
+		print("Checking if rockyou has been unzipped...")
+		if os.path.isfile('/usr/share/wordlists/rockyou.txt.gz'):
+			print("It hasn't been decompressed - decompressing now...\n")
+			os.system('sudo gunzip /usr/share/wordlists/rockyou.txt.gz 1>/dev/null')
+		else:
+			print(colored("rockyou has already been unzipped \n", 'green'))
+			print(colored("Software & Tool updates have been completed!", 'green'))
 	print('Updating searchsploit DB....\n')
-	os.system('sudo searchsploit -u')
+	os.system('sudo searchsploit -u 1>/dev/null')
 	print(colored("Finished searchsploit update", 'green'))
 	print("Updating locate DB...\n")
 	os.system('sudo updatedb')
