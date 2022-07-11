@@ -109,14 +109,18 @@ def peas_download():
 	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/linpeas.sh'
 	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEAS.bat'
 	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEASany.exe'
-	# For the time being - just scrub the PEAS directory and re-obtain
-	if os.path.exists("/opt/PEAS"):
-		os.system("rm /opt/PEAS/*")
-	else:
-		os.mkdir("/opt/PEAS")
-		os.system(f"wget {linpeas_sh} -qO /opt/PEAS/linpeas.sh && chmod +x linpeas.sh")
+	def grab_peas():
+		os.mkdir(f"/opt/PEAS")
+		os.system(f"wget {linpeas_sh} -qO /opt/PEAS/linpeas.sh && chmod +x /opt/PEAS/linpeas.sh")
 		os.system(f"wget {winpeas_bat} -qO /opt/PEAS/winpeas.bat")
 		os.system(f"wget {winpeas_exe} -qO /opt/PEAS/winpeas.exe")
+	# For the time being - just scrub the PEAS directory and re-obtain
+	if os.path.exists("/opt/PEAS"):
+		#Lol, risky
+		os.system("rm -rf /opt/PEAS")
+		grab_peas()
+	else:
+		grab_peas()
 
 
 def shell_creation():
@@ -132,7 +136,7 @@ def shell_creation():
 
 #TODO: Go through the installed tools and make them dynamically executable
 #Search through tools and see if there's any requirements.txt - if there is - install them.
-# sudo ln -s /opt/nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x /opt/nmapAutomator/nmapAutomator.sh
+# os.system("ln -s /opt/nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x /opt/nmapAutomator/nmapAutomator.sh")
 # sudo ln -s /opt/LinEnum.sh /usr/local/bin/'
 # sudo ln -s /opt/.local/bin/one-lin3r /usr/local/bin
 def tool_install():
@@ -163,6 +167,7 @@ def tool_install():
 		os.system(f'pip3 install {pkg} 1>/dev/null')
 		print(colored(f'PYPI {pkg} successfully installed by script', "green"))
 	peas_download()
+	os.system("ln -s /opt/nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x /opt/nmapAutomator/nmapAutomator.sh")
 	print("tool_install() Completed")
 	return True
 
@@ -231,6 +236,7 @@ def test():
 	peas_download()
 	print(os.getlogin()) # Interestingly enough - this returns the actual user
 	print(os.system("whoami")) # This returns as root (since it's run as sudo)
+	return()
 
 def jon():
 	print("Doing some work, here's a nice portrait, circa 2022 \n")
