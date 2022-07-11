@@ -20,15 +20,12 @@ from funcs import *
 #TODO: After install, rename the privilege-escalation-suite dir to PEAS
 #TODO: Ensure that the Metasploit database service is up & running, provide info to the user
 #TODO: Maybe do a search to check if any errors or packages werent able to be added during the script
-#TODO: Separate the function creations into its own python file and import them
+#TODO: Potentially rename the functions so they make more sense, and condense
 # sudo systemctl start postgresql
 # <check to ensure the service is running now>
 # msfdb init
 
 #ADD PyPi PACLAGES TO ME
-#pypi_packages = ['one-lin3r','ptftpd','bloodhound','colorama','pysnmp']
-
-sublime = 'deb https://download.sublimetext.com/ apt/stable/'
 user = os.getlogin()
 
 # This grabs the IP address of tun0 and uses it to start generating malicious binaries
