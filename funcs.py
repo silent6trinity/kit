@@ -36,7 +36,8 @@ GITHUBS = [
 PEAS = [
 	'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/linpeas.sh',
 	'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEAS.bat',
-	'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEASany.exe']
+	'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEASany.exe'
+]
 
 PYPI_PACKAGES = [
 	'one-lin3r',
@@ -72,6 +73,23 @@ def neo4j_init():
 	os.system('sudo touch /usr/share/neo4j/logs/neo4j.log')
 	os.system('sudo neo4j start')
 	print("Neo4j service initialized")
+
+#TODO: Do this better
+#TODO: Fix it so that the proper lower-level user owns the files
+def peas_download():
+	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/linpeas.sh'
+	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEAS.bat'
+	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEASany.exe'
+	# For the time being - just scrub the PEAS directory and re-obtain
+	if os.path.exists("/opt/PEAS"):
+		#Lol, risky
+		os.system("rm /opt/PEAS/*")
+	else:
+		os.mkdir("/opt/PEAS")
+		os.system(f"wget {linpeas_sh} -qO /opt/PEAS/linpeas.sh && chmod +x linpeas.sh")
+		os.system(f"wget {winpeas_bat} -qO /opt/PEAS/winpeas.bat")
+		os.system(f"wget {winpeas_exe} -qO /opt/PEAS/winpeas.exe")
+
 
 def shell_creation():
 	#ip_addr = os.popen('ip addr show eth0 | grep "\\<inet\\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
@@ -116,23 +134,25 @@ def tool_install():
 	for pkg in PYPI_PACKAGES:
 		os.system(f'pip3 install {pkg} 1>/dev/null')
 		print(colored(f'PYPI {pkg} successfully installed by script', "green"))
+	peas_download()
 	print("tool_install() Completed")
 	return True
 
+
 def sublime_download():
+	sublime = 'deb https://download.sublimetext.com/ apt/stable/'
 	os.system('wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg\
 				| sudo apt-key add -')
 	os.system(f'echo {sublime} | sudo tee /etc/apt/sources.list.d/sublime-text.list')
 
 def system_update():
 	print(colored("Beginning System updates, please wait...", 'blue'))
-	os.system('sudo apt-get install apt-transport-https') # This is to ensure sublime_download() wont cause an error
+	os.system('sudo apt-get install apt-transport-https') # Doing this first to ensure sublime_download() wont cause an error
 	sublime_download()
 	tool_install()
 	tool_update()
 	os.system('sudo apt install python3-pip -y')
 	os.system('sudo apt update -y')
-	os.system('sudo apt upgrade -y')
 	os.system('sudo apt upgrade -y')
 	os.system('sudo apt autoremove -y')
 
@@ -141,10 +161,10 @@ def system_update():
 
 def terminal_selection():
 	""" This is what is used within main() to control the function flow """
-	main_menu_title = "Automated Kit Buildout Script, Select ALL, TOOLS, or SHELL \n"
+	main_menu_title = "Automated Kit Buildout Script, Select ALL, TOOLS, SHELL or TEST\n"
 	main_menu_cursor = "-> "
 
-	options = ["ALL (UNTESTED)", "TOOLS", "SHELL (BROKEN)"]
+	options = ["ALL", "TOOLS", "SHELL (BROKEN)", "TEST"]
 	# begin TUI Custom configuration(s)
 	terminal_menu = TerminalMenu(
 		options,
@@ -156,6 +176,8 @@ def terminal_selection():
 	if menu_entry_index == 0:
 		print(("Match Successful on ALL"))
 		system_update()
+		msfdb_init()
+		neo4j_init()
 		#software_update()
 	elif menu_entry_index == 1:
 		print("Match successful on TOOLS")
@@ -169,10 +191,13 @@ def terminal_selection():
 	elif menu_entry_index == 2:
 		print("Match successful on SHELL")
 		shell_creation()
-	#elif menu_entry_index == 3:
-	#	test()
+	elif menu_entry_index == 3:
+		test()
 	else:
 		print("Match failed.")
+
+def test():
+	peas_download()
 
 def jon():
 	print("Doing some work, here's a nice portrait, circa 2022 \n")
@@ -194,12 +219,12 @@ def tool_update():
 		print("Checking if rockyou has been unzipped...")
 		if os.path.isfile('/usr/share/wordlists/rockyou.txt.gz'):
 			print("It hasn't been decompressed - decompressing now...\n")
-			os.system('sudo gunzip /usr/share/wordlists/rockyou.txt.gz 1>/dev/null')
+			os.system('sudo gunzip /usr/share/wordlists/rockyou.txt.gz')
 		else:
 			print(colored("rockyou has already been unzipped \n", 'green'))
 			print(colored("Software & Tool updates have been completed!", 'green'))
 	print('Updating searchsploit DB....\n')
-	os.system('sudo searchsploit -u 1>/dev/null')
+	os.system('sudo searchsploit -u ')
 	print(colored("Finished searchsploit update", 'green'))
 	print("Updating locate DB...\n")
 	os.system('sudo updatedb')
