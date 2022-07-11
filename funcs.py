@@ -2,51 +2,78 @@ import os,re,time
 from simple_term_menu import TerminalMenu
 from termcolor import colored
 
-#TODO: Alphabetize
+
 APT_PACKAGES = [
 	'apt-transport-https',
-    'seclists',
-    'golang-go',
-    'gobuster',
-    'metasploit-framework',
-    'crackmapexec',
-    'snmpcheck','enum4linux',
-    'smbmap',
-    'wfuzz',
-    'sublime-text',
-    'yersinia',
-    'bloodhound',
-    'subfinder',
-    'tilix'
+	'bloodhound',
+	'chromium',
+	'crackmapexec',
+	'enum4linux',
+	'gobuster',
+	'golang-go',
+	'jxplorer',
+	'metasploit-framework',
+	'remmina',
+	'seclists',
+	'smbmap',
+	'snmpcheck',
+	'sshoot',
+	'sshuttle',
+	'subfinder',
+	'sublime-text',
+	'tilix',
+	'wfuzz',
+	'xfreerdp',
+	'yersinia'
 ]
+
 #TODO: Alphabetize
 GITHUBS = [
-    'https://github.com/0v3rride/Enum4LinuxPy.git',
-    'https://github.com/RUB-NDS/PRET.git',
-    'https://github.com/nccgroup/vlan-hopping.git',
-    'https://github.com/HackPlayers/evil-winrm.git',
-    'https://github.com/SecureAuthCorp/Impacket.git',
-    'https://github.com/21y4d/nmapAutomator.git',
-    'https://github.com/vulnersCom/nmap-vulners.git',
-    'https://github.com/rebootuser/LinEnum.git'
+   'https://github.com/0v3rride/Enum4LinuxPy.git',
+	'https://github.com/21y4d/nmapAutomator.git',
+	'https://github.com/BishopFox/rmiscout.git',
+	'https://github.com/cnotin/SplunkWhisperer2',
+	'https://github.com/frohoff/ysoserial.git',
+	'https://github.com/GhostPack/Seatbelt',
+	'https://github.com/HackPlayers/evil-winrm.git',
+	'https://github.com/n0b0dyCN/redis-rogue-server.git',
+	'https://github.com/nccgroup/vlan-hopping.git',
+	'https://github.com/NickstaDB/BaRMIe.git',
+	'https://github.com/p3nt4/Invoke-SocksProxy'
+	'https://github.com/rebootuser/LinEnum.git',
+	'https://github.com/RUB-NDS/PRET.git',
+	'https://github.com/SecureAuthCorp/Impacket.git',
+	'https://github.com/sosdave/KeyTabExtract',
+	'https://github.com/vulnersCom/nmap-vulners.git'
 ]
-#TODO: Actually grab these
-#TODO: REGEX out the release date so we always swipe the newest editions
-#TODO: If these scripts already exist, wipe them out and re-obtain
-PEAS = [
-	'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/linpeas.sh',
-	'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEAS.bat',
-	'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEASany.exe'
-]
+
+#Kerbrute releases
+# https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_linux_amd64
+# https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_windows_amd64.exe
+
+#pspy release
+#https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy64
 
 PYPI_PACKAGES = [
 	'one-lin3r',
+	'pypykatz',
+	'pygtk',
 	'ptftpd',
 	'bloodhound',
 	'colorama',
-	'pysnmp']
+	'pysnmp'
+]
 
 # ---- Begin Function declarations -----
+
+def env_setup():
+	""" This is meant to start services, check running processes, etc """
+	print(colored("Starting SSH service ...", "blue"))
+	os.system("sudo service ssh start")
+	# The SMB Server may need some massaging so we have it sharing the desired directory
+	#print(colored("Starting SMB Server", "blue"))
+	# os.system("impacket-smbserver -smb2support share $(pwd)")
+
 
 def go_install():
 	if os.path.exists(f'/usr/local/go'):
@@ -60,6 +87,7 @@ def go_install():
 		os.system('go get -u github.com/tomnomnom/assetfinder')
 		print(colored('If we have gotten to here, this is a good sign....', 'yellow'))
 
+#Consider moving into environment setup
 def msfdb_init():
 	#TODO: Check and make sure the msfdb is actually up and running
 	os.system('sudo systemctl start postgresql')
@@ -67,6 +95,7 @@ def msfdb_init():
 	os.system('sudo msfdb init')
 	print("MSF Database Initialized")
 
+#Consider moving into environment setup
 def neo4j_init():
 	#TODO: Grab the port/service information and present to the user
 	os.system('sudo mkdir -p /usr/share/neo4j/logs')
@@ -82,7 +111,6 @@ def peas_download():
 	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEASany.exe'
 	# For the time being - just scrub the PEAS directory and re-obtain
 	if os.path.exists("/opt/PEAS"):
-		#Lol, risky
 		os.system("rm /opt/PEAS/*")
 	else:
 		os.mkdir("/opt/PEAS")
@@ -156,6 +184,9 @@ def system_update():
 	os.system('sudo apt upgrade -y')
 	os.system('sudo apt autoremove -y')
 
+	print(colored("Starting SSH service ...", "blue"))
+	os.system("sudo service ssh start")
+
 	print(colored("Finished SYSTEM setup", 'green'))
 	return()
 
@@ -198,6 +229,8 @@ def terminal_selection():
 
 def test():
 	peas_download()
+	print(os.getlogin()) # Interestingly enough - this returns the actual user
+	print(os.system("whoami")) # This returns as root (since it's run as sudo)
 
 def jon():
 	print("Doing some work, here's a nice portrait, circa 2022 \n")
