@@ -33,12 +33,14 @@ GITHUBS = [
 	'https://github.com/21y4d/nmapAutomator.git',
 	'https://github.com/BishopFox/rmiscout.git',
 	'https://github.com/cnotin/SplunkWhisperer2',
+	'https://github.com/unode/firefox_decrypt.git',
 	'https://github.com/frohoff/ysoserial.git',
 	'https://github.com/GhostPack/Seatbelt',
 	'https://github.com/HackPlayers/evil-winrm.git',
 	'https://github.com/n0b0dyCN/redis-rogue-server.git',
 	'https://github.com/nccgroup/vlan-hopping.git',
 	'https://github.com/NickstaDB/BaRMIe.git',
+	'https://github.com/samratashok/nishang.git',
 	'https://github.com/p3nt4/Invoke-SocksProxy'
 	'https://github.com/rebootuser/LinEnum.git',
 	'https://github.com/RUB-NDS/PRET.git',
@@ -106,9 +108,9 @@ def neo4j_init():
 #TODO: Do this better
 #TODO: Fix it so that the proper lower-level user owns the files
 def peas_download():
-	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/linpeas.sh'
-	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEAS.bat'
-	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEASany.exe'
+	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/linpeas.sh'
+	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEAS.bat'
+	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEASany.exe'
 	def grab_peas():
 		os.mkdir(f"/opt/PEAS")
 		os.system(f"wget {linpeas_sh} -qO /opt/PEAS/linpeas.sh && chmod +x /opt/PEAS/linpeas.sh")
@@ -140,7 +142,14 @@ def shell_creation():
 # sudo ln -s /opt/LinEnum.sh /usr/local/bin/'
 # sudo ln -s /opt/.local/bin/one-lin3r /usr/local/bin
 def tool_install():
-
+	#Temp method to grab lazagne and the old firefox decrypt for python2
+	lazagne_exe = 'https://github.com/AlessandroZ/LaZagne/releases/download/2.4.3/lazagne.exe'
+	os.system(f"wget {lazagne_exe} -qO /opt/lazagne.exe")
+	ff_decrypt_old = 'https://github.com/unode/firefox_decrypt/archive/refs/tags/0.7.0.zip'
+	os.system(f"wget {ff_decrypt_old} -qO /opt/FirefoxDecrypt_ForPython2")
+	
+	#### END TEMP METHOD
+	
 	def is_repo_installed(repo_url):
 		if a_match := re.match(r"https://.+/(.+)\.git", repo_url):
 			return os.path.exists(f"/opt/{a_match.group(1)}")
