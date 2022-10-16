@@ -112,7 +112,7 @@ def msfdb_init():
 	os.system('sudo msfdb init')
 	print("MSF Database Initialized")
 	print("Creating msfconsole.rc file")
-	os.system(f' cp ./msfconsole.rc /home/{user}/.msf4/msfconsole.rc')
+	os.system(f' cp ./msfconsole.rc /home/kali/.msf4/msfconsole.rc')
 	os.system('cp ./msfconsole.rc /home/kali/.msf4/msfconsole.rc')
 
 #Consider moving into environment setup
