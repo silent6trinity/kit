@@ -124,10 +124,10 @@ def neo4j_init():
 
 #TODO: Do this better
 #TODO: Fix it so that the proper lower-level user owns the files
+
+# This whole PEAS mess needs to be fixed later
 def peas_download():
-	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/linpeas.sh'
-	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEAS.bat'
-	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEASany.exe'
+	# For the time being - just scrub the PEAS directory and re-obtain
 	if os.path.exists("/opt/PEAS"):
 		#Lol, risky
 		os.system("sudo rm -rf /opt/PEAS")
@@ -135,12 +135,14 @@ def peas_download():
 	else:
 		grab_peas()
 
-	def grab_peas():
-		os.mkdir(f"sudo /opt/PEAS")
-		os.system(f"sudo wget {linpeas_sh} -qO /opt/PEAS/linpeas.sh && chmod +x /opt/PEAS/linpeas.sh")
-		os.system(f"sudo wget {winpeas_bat} -qO /opt/PEAS/winpeas.bat")
-		os.system(f"sudo wget {winpeas_exe} -qO /opt/PEAS/winpeas.exe")
-	# For the time being - just scrub the PEAS directory and re-obtain
+def grab_peas():
+	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/linpeas.sh'
+	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEAS.bat'
+	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEASany.exe'
+	os.mkdir(f"sudo /opt/PEAS")
+	os.system(f"sudo wget {linpeas_sh} -qO /opt/PEAS/linpeas.sh && chmod +x /opt/PEAS/linpeas.sh")
+	os.system(f"sudo wget {winpeas_bat} -qO /opt/PEAS/winpeas.bat")
+	os.system(f"sudo wget {winpeas_exe} -qO /opt/PEAS/winpeas.exe")
 
 
 
