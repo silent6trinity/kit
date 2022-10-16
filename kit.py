@@ -37,7 +37,7 @@ user = os.getlogin()
 
 # I moved this back into the main python executable, because I didn't like the idea of main() being in a function warehouse
 def main():
-    os.chdir("/opt")
+#    os.chdir("/opt")
     terminal_selection()
 
 if __name__ == "__main__":
