@@ -139,7 +139,7 @@ def grab_peas():
 	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/linpeas.sh'
 	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEAS.bat'
 	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEASany.exe'
-	os.mkdir(f"sudo /opt/PEAS")
+	os.system(f"sudo mkdir /opt/PEAS")
 	os.system(f"sudo wget {linpeas_sh} -qO /opt/PEAS/linpeas.sh && chmod +x /opt/PEAS/linpeas.sh")
 	os.system(f"sudo wget {winpeas_bat} -qO /opt/PEAS/winpeas.bat")
 	os.system(f"sudo wget {winpeas_exe} -qO /opt/PEAS/winpeas.exe")
