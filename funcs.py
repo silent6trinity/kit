@@ -43,7 +43,7 @@ GITHUBS = [
 	'https://github.com/NickstaDB/BaRMIe.git',
 	'https://github.com/samratashok/nishang.git',
 	'https://github.com/p3nt4/Invoke-SocksProxy',
-	'https://github.com/silent6trinity/pwnkit.git,
+	'https://github.com/silent6trinity/pwnkit.git',
 	'https://github.com/rebootuser/LinEnum.git',
 	'https://github.com/RUB-NDS/PRET.git',
 	'https://github.com/SecureAuthCorp/Impacket.git',
