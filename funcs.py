@@ -113,7 +113,7 @@ def msfdb_init():
 	print("MSF Database Initialized")
 	print("Creating msfconsole.rc file")
 	os.system(f' cp ./msfconsole.rc /home/kali/.msf4/msfconsole.rc')
-	os.system('cp ./msfconsole.rc /home/kali/.msf4/msfconsole.rc')
+
 
 #Consider moving into environment setup
 def neo4j_init():
@@ -129,9 +129,9 @@ def neo4j_init():
 # This whole PEAS mess needs to be fixed later
 def peas_download():
 	# For the time being - just scrub the PEAS directory and re-obtain
-	if os.path.exists("/home/kali/Downloads/PEAS"):
+	if os.path.exists("/opt/PEAS"):
 		#Lol, risky
-		os.system("sudo rm -rf /home/kali/Downloads/PEAS")
+		os.system("sudo rm -rf /opt/PEAS")
 		grab_peas()
 	else:
 		grab_peas()
@@ -140,10 +140,10 @@ def grab_peas():
 	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/linpeas.sh'
 	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEAS.bat'
 	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEASany.exe'
-	os.system(f"sudo mkdir /home/kali/Downloads/PEAS")
-	os.system(f"sudo wget {linpeas_sh} -qO /home/kali/Downloads/PEAS/linpeas.sh && chmod +x /opt/PEAS/linpeas.sh")
-	os.system(f"sudo wget {winpeas_bat} -qO /home/kali/Downloads/winpeas.bat")
-	os.system(f"sudo wget {winpeas_exe} -qO /home/kali/Downloads/PEAS/winpeas.exe")
+	os.system(f"sudo mkdir /opt/PEAS")
+	os.system(f"sudo wget {linpeas_sh} -qO /opt/PEAS/linpeas.sh ; sudo chmod +x /opt/PEAS/linpeas.sh")
+	os.system(f"sudo wget {winpeas_bat} -qO /opt/PEAS/winpeas.bat")
+	os.system(f"sudo wget {winpeas_exe} -qO /opt/PEAS/winpeas.exe")
 
 
 
@@ -166,15 +166,15 @@ def shell_creation():
 def tool_install():
 	#Temp method to grab lazagne and the old firefox decrypt for python2
 	lazagne_exe = 'https://github.com/AlessandroZ/LaZagne/releases/download/2.4.3/lazagne.exe'
-	os.system(f"sudo wget {lazagne_exe} -qO /home/kali/Downloads/lazagne.exe")
+	os.system(f"sudo wget {lazagne_exe} -qO /opt/lazagne.exe")
 	ff_decrypt_old = 'https://github.com/unode/firefox_decrypt/archive/refs/tags/0.7.0.zip'
-	os.system(f"sudo wget {ff_decrypt_old} -qO /home/kali/Downloads/FirefoxDecrypt_ForPython2")
+	os.system(f"sudo wget {ff_decrypt_old} -qO /opt/FirefoxDecrypt_ForPython2")
 	
 	#### END TEMP METHOD
 	
 	def is_repo_installed(repo_url):
 		if a_match := re.match(r"https://.+/(.+)\.git", repo_url):
-			return os.path.exists(f"//home/kali/Downloads/{a_match.group(1)}")
+			return os.path.exists(f"/opt/{a_match.group(1)}")
 		else:
 			print(colored(f'INVALID URL: {repo_url}', 'red'))
 			# Returning True here because if the url isn't valid, then we definitely don't want to try installing
@@ -183,7 +183,7 @@ def tool_install():
 	for git_url in GITHUBS:
 		print(f"Checking for local install of: {git_url}")
 		if is_repo_installed(git_url):
-			print(colored(f"Found in /Downloads continuing...\n"))
+			print(colored(f"Found in /opt continuing...\n"))
 		else:
 			os.system(f"git clone {git_url}")
 			print(colored("Repo cloned! Moving on...\n", "green"))
@@ -198,7 +198,7 @@ def tool_install():
 		os.system(f'pip3 install {pkg} 1>/dev/null')
 		print(colored(f'PYPI {pkg} successfully installed by script', "green"))
 	peas_download()
-	os.system("ln -s /home/kali/Downloads/nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x /home/kali/Downloads/nmapAutomator/nmapAutomator.sh")
+	os.system("sudo ln -s /opt/nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x /opt/nmapAutomator/nmapAutomator.sh")
 	print("tool_install() Completed")
 	return True
 
