@@ -32,6 +32,7 @@ APT_PACKAGES = [
 GITHUBS = [
    'https://github.com/0v3rride/Enum4LinuxPy.git',
 	'https://github.com/21y4d/nmapAutomator.git',
+	'https://github.com/galkan/crowbar.git',
 	'https://github.com/BishopFox/rmiscout.git',
 	'https://github.com/cnotin/SplunkWhisperer2.git',
 	'https://github.com/unode/firefox_decrypt.git',
