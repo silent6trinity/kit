@@ -52,7 +52,8 @@ GITHUBS = [
 	'https://github.com/RUB-NDS/PRET.git',
 	'https://github.com/SecureAuthCorp/Impacket.git',
 	'https://github.com/sosdave/KeyTabExtract.git',
-	'https://github.com/vulnersCom/nmap-vulners.git'
+	'https://github.com/vulnersCom/nmap-vulners.git',
+	'https://github.com/jeroennijhof/vncpwd'
 ]
 
 #Kerbrute releases
