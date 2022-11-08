@@ -53,6 +53,7 @@ GITHUBS = [
 	'https://github.com/SecureAuthCorp/Impacket.git',
 	'https://github.com/sosdave/KeyTabExtract.git',
 	'https://github.com/vulnersCom/nmap-vulners.git',
+	'https://github.com/int0x33/nc.exe',
 	'https://github.com/jeroennijhof/vncpwd'
 ]
 
