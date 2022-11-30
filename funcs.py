@@ -44,6 +44,7 @@ GITHUBS = [
 	'https://github.com/HackPlayers/evil-winrm.git',
 	'https://github.com/n0b0dyCN/redis-rogue-server.git',
 	'https://github.com/nccgroup/vlan-hopping.git',
+	'https://github.com/danielbohannon/Invoke-Obfuscation.git',
 	'https://github.com/NickstaDB/BaRMIe.git',
 	'https://github.com/samratashok/nishang.git',
 	'https://github.com/p3nt4/Invoke-SocksProxy.git',
