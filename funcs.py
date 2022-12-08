@@ -3,12 +3,34 @@ from simple_term_menu import TerminalMenu
 from termcolor import colored
 from tools import APT_PACKAGES,GITHUBS,PYPI_PACKAGES
 
-#Kerbrute releases
-# https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_linux_amd64
-# https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_windows_amd64.exe
+#------- God i'm so sorry -------#
+# This grabs the IP address of tun0 and uses it to start generating malicious binaries
+## TODO: Create a method to select what interface you want to use
+# ip_addr = os.popen('ip addr show tun0 | grep "\\<inet\\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
+# ip_addr = os.popen('ip addr show eth0 | grep "\\<inet\\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
+# This port is used for malicious binary generation
+# listen_port = 6969
+#
+#### !!! Consider creating an empty array that we append the finished software to once it has been installed
+#TODO: Grab the neo4j database info, make sure its running and provide to user
+#TODO: Grab the neo4j webserver & the associated port ---> netstat -tano | grep -i "7474"
+#TODO: Adjust the dir/file checks to local, rather than abspath
+#TODO: After install, rename the privilege-escalation-suite dir to PEAS
+#TODO: Ensure that the Metasploit database service is up & running, provide info to the user
+#TODO: Maybe do a search to check if any errors or packages werent able to be added during the script
+#TODO: Potentially rename the functions so they make more sense, and condense
+#TODO: Scrub /etc/hosts file so that it only has the typical localhost/kali entries
+#TODO: Add command-line argument options
+#TODO: Check to make sure the kali installation is a proper VMX, because the others kinda break
+#TODO: x11 keyboard injection script
+#TODO: Include ansible malicious playbook
+#TODO: Include windows persistence snippet(s)
 
-#pspy release
-#https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy64
+# sudo systemctl start postgresql
+# <check to ensure the service is running now>
+# msfdb init
+# ------------------------------#
+
 
 
 # ---- Begin Function declarations -----
@@ -49,7 +71,7 @@ def go_install():
 
 #Consider moving into environment setup
 def msfdb_init():
-	#TODO: Check and make sure the msfdb is actually up and running
+	#TODO: Check and make sure the msfdb is actually up and running (msfdb run)
 	os.system('sudo systemctl start postgresql')
 	os.system('systemctl status postgresql')
 	os.system('sudo msfdb init')
@@ -105,6 +127,13 @@ def shell_creation():
 # os.system("ln -s /opt/nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x /opt/nmapAutomator/nmapAutomator.sh")
 # sudo ln -s /opt/LinEnum.sh /usr/local/bin/'
 # sudo ln -s /opt/.local/bin/one-lin3r /usr/local/bin
+#Kerbrute releases
+# https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_linux_amd64
+# https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_windows_amd64.exe
+
+#pspy release
+#https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy64
+
 def tool_install():
 	#Temp method to grab lazagne and the old firefox decrypt for python2
 	lazagne_exe = 'https://github.com/AlessandroZ/LaZagne/releases/download/2.4.3/lazagne.exe'
@@ -144,6 +173,16 @@ def tool_install():
 	print("tool_install() Completed")
 	return True
 
+def structure_setup():
+	"""Meant to create directory structure and organize tools into"""
+	#NOTE-> THIS IS TESTED AND WORKS PROPERLY
+	DIRS = ["Linux","Windows","ActiveDirectory","C2Frameworks"]
+	for dir in DIRS:
+		if os.path.exists(f"/home/kali/Downloads/{dir}"):
+			print(f"{dir} FOLDER EXISTS")
+		else:
+			os.mkdir(f"/home/kali/Downloads/{dir}")
+			print(f"created the {dir} directory")
 
 def sublime_download():
 	sublime = 'deb https://download.sublimetext.com/ apt/stable/'
@@ -208,10 +247,10 @@ def terminal_selection():
 		print("Match failed.")
 
 def test():
-	#peas_download()
 	print(os.getlogin()) # Interestingly enough - this returns the actual user
+	structure_setup()
 	print(os.system("whoami")) # This returns as root (since it's run as sudo)
-	print("Test Successful!")
+	print("Test Completed")
 	return()
 
 def jon():
