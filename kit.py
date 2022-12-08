@@ -1,18 +1,12 @@
 #! /usr/bin/python3
-
 import os,re,time
-from simple_term_menu import TerminalMenu
 from termcolor import colored
 from funcs import *
-
-user = os.getlogin()
 
 # Prints the description of the script
 parser = argparse.ArgumentParser(description='Pentest environment kit script.\n use -h or --help for help',
 								 epilog= "Please, the flags were annoying enough to implement; Don't hurt me for this.")
-#Possible providable arguments
 #EXAMPLE: parser.add_argument("--foo", help="foo", default="FOO")
-
 parser.add_argument("-all", help="Updates & Upgrades the OS, then installs tools and software once completed.")
 parser.add_argument("-scrub", help="Scrub the /etc/hosts file to the default configuration")
 parser.add_argument("-shells", help="BROKEN, CURRENTLY DOES NOTHING")
@@ -26,10 +20,23 @@ args = parser.parse_args()
 ####
 if args.all:
 	print(f"You chose {args.all}")
+	nginx_config()
+	system_update()
+	msfdb_init()
+	neo4j_init()
+	#software_update()
 elif args.shells:
 	print(f"You chose {args.shells}")
+	#shell_creation()
 elif args.tools:
 	print(f"You chose {args.tools}")
+	#software_update()
+	nginx_config()
+	tool_install()
+	tool_update()
+	msfdb_init()
+	neo4j_init()
+	#go_install()
 elif args.scrub:
 	print("scrubbing /etc/hosts")
 elif args.jon:
@@ -39,10 +46,8 @@ elif args.test:
 else:
 	print(parser.description)
 
-
 def main():
-    os.chdir("/home/kali/Downloads")
-    #terminal_selection()
+	os.chdir("/home/kali/Downloads")
 
 if __name__ == "__main__":
     main()

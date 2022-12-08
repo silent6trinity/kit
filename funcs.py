@@ -1,5 +1,4 @@
 import argparse,os,re,time
-from simple_term_menu import TerminalMenu
 from termcolor import colored
 from tools import APT_PACKAGES,GITHUBS,PYPI_PACKAGES
 
@@ -21,7 +20,7 @@ from tools import APT_PACKAGES,GITHUBS,PYPI_PACKAGES
 #TODO: Potentially rename the functions so they make more sense, and condense
 #TODO: Scrub /etc/hosts file so that it only has the typical localhost/kali entries
 #TODO: Add command-line argument options
-#TODO: Check to make sure the kali installation is a proper VMX, because the others kinda break
+#TODO: Check to make sure the kali installation is a proper VMDK, because the others kinda break
 #TODO: x11 keyboard injection script
 #TODO: Include ansible malicious playbook
 #TODO: Include windows persistence snippet(s)
@@ -31,7 +30,7 @@ from tools import APT_PACKAGES,GITHUBS,PYPI_PACKAGES
 # msfdb init
 # ------------------------------#
 
-
+kit_location = os.getcwd()
 
 # ---- Begin Function declarations -----
 
@@ -40,7 +39,8 @@ def nginx_config():
 	os.system("sudo mkdir -p /var/www/uploads/Exfil")
 	os.system("sudo chown -R www-data:www-data /var/www/uploads/Exfil")
 	os.system("sudo cp ./upload.conf /etc/nginx/sites-available/upload.conf")
-	os.system("sudo ln -s /etc/nginx/sites-available/upload.conf /etc/nginx/sites-enabled/")
+	if not os.path.exists("/etc/nginx/sites-enabled/upload.conf"):
+		os.system("sudo ln -s /etc/nginx/sites-available/upload.conf /etc/nginx/sites-enabled/")
 	os.system("sudo systemctl restart nginx.service")
 	os.system("sudo rm /etc/nginx/sites-enabled/default")
 	# Usage
@@ -110,7 +110,6 @@ def grab_peas():
 	os.system(f"sudo wget {winpeas_exe} -qO ./PEAS/winpeas.exe")
 
 
-
 def shell_creation():
 	#ip_addr = os.popen('ip addr show eth0 | grep "\\<inet\\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
 	#listen_port = 6969
@@ -127,51 +126,6 @@ def shell_creation():
 # os.system("ln -s /opt/nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x /opt/nmapAutomator/nmapAutomator.sh")
 # sudo ln -s /opt/LinEnum.sh /usr/local/bin/'
 # sudo ln -s /opt/.local/bin/one-lin3r /usr/local/bin
-#Kerbrute releases
-# https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_linux_amd64
-# https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_windows_amd64.exe
-
-#pspy release
-#https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy64
-
-def tool_install():
-	#Temp method to grab lazagne and the old firefox decrypt for python2
-	lazagne_exe = 'https://github.com/AlessandroZ/LaZagne/releases/download/2.4.3/lazagne.exe'
-	os.system(f"sudo wget {lazagne_exe} -qO ./lazagne.exe")
-	ff_decrypt_old = 'https://github.com/unode/firefox_decrypt/archive/refs/tags/0.7.0.zip'
-	os.system(f"sudo wget {ff_decrypt_old} -qO ./FirefoxDecrypt_ForPython2")
-	
-	#### END TEMP METHOD
-	
-	def is_repo_installed(repo_url):
-		if a_match := re.match(r"https://.+/(.+)\.git", repo_url):
-			return os.path.exists(f"./{a_match.group(1)}")
-		else:
-			print(colored(f'INVALID URL: {repo_url}', 'red'))
-			# Returning True here because if the url isn't valid, then we definitely don't want to try installing
-			return True
-
-	for git_url in GITHUBS:
-		print(f"Checking for local install of: {git_url}")
-		if is_repo_installed(git_url):
-			print(colored(f"Found in current directory, continuing...\n"))
-		else:
-			os.system(f"git clone {git_url}")
-			print(colored("Repo cloned! Moving on...\n", "green"))
-			#return()
-
-	# begin installing pypi & apt packages
-	for pkg in APT_PACKAGES:
-		os.system(f'sudo apt install {pkg} -y 1>/dev/null')
-		os.system('sudo apt install -y 1>/dev/null')
-		print(colored(f'APT {pkg} successfully installed by script', "green"))
-	for pkg in PYPI_PACKAGES:
-		os.system(f'pip3 install {pkg} 1>/dev/null')
-		print(colored(f'PYPI {pkg} successfully installed by script', "green"))
-	peas_download()
-	os.system("sudo ln -s ./nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x ./nmapAutomator/nmapAutomator.sh")
-	print("tool_install() Completed")
-	return True
 
 def structure_setup():
 	"""Meant to create directory structure and organize tools into"""
@@ -184,6 +138,7 @@ def structure_setup():
 			os.mkdir(f"/home/kali/Downloads/{dir}")
 			print(f"created the {dir} directory")
 
+# This could potentially be thrown away now and just use the .deb install now
 def sublime_download():
 	sublime = 'deb https://download.sublimetext.com/ apt/stable/'
 	os.system('sudo wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg\
@@ -207,48 +162,9 @@ def system_update():
 	print(colored("Finished SYSTEM setup", 'green'))
 	return()
 
-def terminal_selection():
-	""" This is what is used within main() to control the function flow """
-	main_menu_title = "Automated Kit Buildout Script, Select ALL, TOOLS, SHELL or TEST\n"
-	main_menu_cursor = "-> "
-
-	options = ["ALL", "TOOLS", "SHELL (BROKEN)", "TEST"]
-	# begin TUI Custom configuration(s)
-	terminal_menu = TerminalMenu(
-		options,
-		title=main_menu_title,
-		menu_cursor=main_menu_cursor)
-	menu_entry_index = terminal_menu.show()
-	user_selection = {options[menu_entry_index]}
-	# Choice menu
-	if menu_entry_index == 0:
-		print(("Match Successful on ALL"))
-		nginx_config()
-		system_update()
-		msfdb_init()
-		neo4j_init()
-		#software_update()
-	elif menu_entry_index == 1:
-		print("Match successful on TOOLS")
-		#software_update()
-		nginx_config()
-		tool_install()
-		tool_update()
-		msfdb_init()
-		neo4j_init()
-		jon()
-		#go_install()
-	elif menu_entry_index == 2:
-		print("Match successful on SHELL")
-		shell_creation()
-	elif menu_entry_index == 3:
-		test()
-	else:
-		print("Match failed.")
-
 def test():
 	print(os.getlogin()) # Interestingly enough - this returns the actual user
-	structure_setup()
+	print(f"Kit.py Location: {kit_location}")
 	print(os.system("whoami")) # This returns as root (since it's run as sudo)
 	print("Test Completed")
 	return()
@@ -285,4 +201,43 @@ def tool_update():
 	print(colored("Finished locate DB update \n", 'green'))
 	nmap_update()
 	rockyou()
+	return True
+
+def tool_install():
+	os.chdir("/home/kali/Downloads")
+	####Temp method to grab lazagne and the old firefox decrypt for python2
+	lazagne_exe = 'https://github.com/AlessandroZ/LaZagne/releases/download/2.4.3/lazagne.exe'
+	os.system(f"sudo wget {lazagne_exe} -qO ./lazagne.exe")
+	ff_decrypt_old = 'https://github.com/unode/firefox_decrypt/archive/refs/tags/0.7.0.zip'
+	os.system(f"sudo wget {ff_decrypt_old} -qO ./FirefoxDecrypt_ForPython2")
+	#### END TEMP METHOD
+	
+	def is_repo_installed(repo_url):
+		if a_match := re.match(r"https://.+/(.+)\.git", repo_url):
+			return os.path.exists(f"./{a_match.group(1)}")
+		else:
+			print(colored(f'INVALID URL: {repo_url}', 'red'))
+			# Returning True here because if the url isn't valid, then we definitely don't want to try installing
+			return True
+
+	for git_url in GITHUBS:
+		print(f"Checking for local install of: {git_url}")
+		if is_repo_installed(git_url):
+			print(colored(f"Found in current directory, continuing...\n"))
+		else:
+			os.system(f"git clone {git_url}")
+			print(colored("Repo cloned! Moving on...\n", "green"))
+			#return()
+
+	# begin installing pypi & apt packages
+	for pkg in APT_PACKAGES:
+		os.system(f'sudo apt install {pkg} -y 1>/dev/null')
+		os.system('sudo apt install -y 1>/dev/null')
+		print(colored(f'APT {pkg} successfully installed by script', "green"))
+	for pkg in PYPI_PACKAGES:
+		os.system(f'pip3 install {pkg} 1>/dev/null')
+		print(colored(f'PYPI {pkg} successfully installed by script', "green"))
+	peas_download()
+	os.system("sudo ln -s ./nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x ./nmapAutomator/nmapAutomator.sh")
+	print("tool_install() Completed")
 	return True
