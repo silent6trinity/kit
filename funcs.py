@@ -55,7 +55,8 @@ GITHUBS = [
 	'https://github.com/sosdave/KeyTabExtract.git',
 	'https://github.com/vulnersCom/nmap-vulners.git',
 	'https://github.com/int0x33/nc.exe',
-	'https://github.com/jeroennijhof/vncpwd'
+	'https://github.com/danielbohannon/Invoke-Obfuscation.git',
+	'https://github.com/jeroennijhof/vncpwd.git'
 ]
 
 #Kerbrute releases
