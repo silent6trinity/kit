@@ -2,35 +2,14 @@ import argparse,os,re,time
 from termcolor import colored
 from tools import APT_PACKAGES,GITHUBS,PYPI_PACKAGES
 
-#------- God i'm so sorry -------#
-# This grabs the IP address of tun0 and uses it to start generating malicious binaries
-## TODO: Create a method to select what interface you want to use
-# ip_addr = os.popen('ip addr show tun0 | grep "\\<inet\\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
-# ip_addr = os.popen('ip addr show eth0 | grep "\\<inet\\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
-# This port is used for malicious binary generation
-# listen_port = 6969
-#
-#### !!! Consider creating an empty array that we append the finished software to once it has been installed
-#TODO: Grab the neo4j database info, make sure its running and provide to user
-#TODO: Grab the neo4j webserver & the associated port ---> netstat -tano | grep -i "7474"
-#TODO: Adjust the dir/file checks to local, rather than abspath
-#TODO: After install, rename the privilege-escalation-suite dir to PEAS
-#TODO: Ensure that the Metasploit database service is up & running, provide info to the user
-#TODO: Maybe do a search to check if any errors or packages werent able to be added during the script
-#TODO: Potentially rename the functions so they make more sense, and condense
-#TODO: Scrub /etc/hosts file so that it only has the typical localhost/kali entries
-#TODO: Add command-line argument options
-#TODO: Check to make sure the kali installation is a proper VMDK, because the others kinda break
-#TODO: x11 keyboard injection script
-#TODO: Include ansible malicious playbook
-#TODO: Include windows persistence snippet(s)
-
 # sudo systemctl start postgresql
 # <check to ensure the service is running now>
 # msfdb init
 # ------------------------------#
 
 kit_location = os.getcwd()
+homedir = os.environ['HOME']
+dldir = homedir + "/Downloads"
 
 # ---- Begin Function declarations -----
 
@@ -77,7 +56,7 @@ def msfdb_init():
 	os.system('sudo msfdb init')
 	print("MSF Database Initialized")
 	print("Creating msfconsole.rc file")
-	os.system(f' cp ./msfconsole.rc /home/kali/.msf4/msfconsole.rc') #This currently doesn't work due to the dirs switching around
+	os.system(f' cp {kit_location}/msfconsole.rc {homedir}/.msf4/msfconsole.rc')
 
 #Consider moving into environment setup
 def neo4j_init():
@@ -93,9 +72,9 @@ def neo4j_init():
 # This whole PEAS mess needs to be fixed later
 def peas_download():
 	# For the time being - just scrub the PEAS directory and re-obtain
-	if os.path.exists("./PEAS"):
+	if os.path.exists(f"{dldir}/PEAS"):
 		#Lol, risky
-		os.system("sudo rm -rf ./PEAS")
+		os.system(f"sudo rm -rf {dldir}/PEAS")
 		grab_peas()
 	else:
 		grab_peas()
@@ -104,13 +83,19 @@ def grab_peas():
 	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/linpeas.sh'
 	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEAS.bat'
 	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEASany.exe'
-	os.system(f"sudo mkdir ./PEAS")
-	os.system(f"sudo wget {linpeas_sh} -qO ./PEAS/linpeas.sh ; sudo chmod +x ./PEAS/linpeas.sh")
-	os.system(f"sudo wget {winpeas_bat} -qO ./PEAS/winpeas.bat")
-	os.system(f"sudo wget {winpeas_exe} -qO ./PEAS/winpeas.exe")
+	os.system(f"sudo mkdir {dldir}/PEAS")
+	os.system(f"sudo wget {linpeas_sh} -qO {dldir}/PEAS/linpeas.sh ; sudo chmod +x {dldir}/PEAS/linpeas.sh")
+	os.system(f"sudo wget {winpeas_bat} -qO {dldir}/PEAS/winpeas.bat")
+	os.system(f"sudo wget {winpeas_exe} -qO {dldir}/PEAS/winpeas.exe")
 
 
 def shell_creation():
+	# This grabs the IP address of tun0 and uses it to start generating malicious binaries
+	## TODO: Create a method to select what interface you want to use
+	# ip_addr = os.popen('ip addr show tun0 | grep "\\<inet\\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
+	# ip_addr = os.popen('ip addr show eth0 | grep "\\<inet\\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
+	# This port is used for malicious binary generation
+	# listen_port = 6969
 	#ip_addr = os.popen('ip addr show eth0 | grep "\\<inet\\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
 	#listen_port = 6969
 	print(f"Interface address is: {ip_addr}")
@@ -130,25 +115,21 @@ def shell_creation():
 def structure_setup():
 	"""Meant to create directory structure and organize tools into"""
 	#NOTE-> THIS IS TESTED AND WORKS PROPERLY
-	DIRS = ["Linux","Windows","ActiveDirectory","C2Frameworks"]
+	DIRS = ["Linux","Windows","ActiveDirectory","C2Frameworks", "Packages"]
 	for dir in DIRS:
-		if os.path.exists(f"/home/kali/Downloads/{dir}"):
+		if os.path.exists(f"{dldir}/{dir}"):
 			print(f"{dir} FOLDER EXISTS")
 		else:
-			os.mkdir(f"/home/kali/Downloads/{dir}")
+			os.mkdir(f"{dldir}/{dir}")
 			print(f"created the {dir} directory")
 
-# This could potentially be thrown away now and just use the .deb install now
-def sublime_download():
-	sublime = 'deb https://download.sublimetext.com/ apt/stable/'
-	os.system('sudo wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg\
-				| sudo apt-key add -')
-	os.system(f'echo {sublime} | sudo tee /etc/apt/sources.list.d/sublime-text.list')
+def sublime_install():
+	sublime = 'https://download.sublimetext.com/sublime-text_build-3211_amd64.deb'
+	os.system(f'wget {sublime} -qO {dldir}/sublime.deb ; sudo dpkg -i {dldir}/sublime.deb')
 
 def system_update():
 	print(colored("Beginning System updates, please wait...", 'blue'))
-	os.system('sudo apt-get install apt-transport-https') # Doing this first to ensure sublime_download() wont cause an error
-	sublime_download()
+	sublime_install()
 	tool_install()
 	tool_update()
 	os.system('sudo apt install python3-pip -y')
@@ -165,7 +146,7 @@ def system_update():
 def test():
 	print(os.getlogin()) # Interestingly enough - this returns the actual user
 	print(f"Kit.py Location: {kit_location}")
-	print(os.system("whoami")) # This returns as root (since it's run as sudo)
+	print(os.system(f"whoami")) # This returns as root (since it's run as sudo)
 	print("Test Completed")
 	return()
 
@@ -204,12 +185,12 @@ def tool_update():
 	return True
 
 def tool_install():
-	os.chdir("/home/kali/Downloads")
+	os.chdir(f"{dldir}")
 	####Temp method to grab lazagne and the old firefox decrypt for python2
 	lazagne_exe = 'https://github.com/AlessandroZ/LaZagne/releases/download/2.4.3/lazagne.exe'
-	os.system(f"sudo wget {lazagne_exe} -qO ./lazagne.exe")
+	os.system(f"sudo wget {lazagne_exe} -qO {dldir}/lazagne.exe")
 	ff_decrypt_old = 'https://github.com/unode/firefox_decrypt/archive/refs/tags/0.7.0.zip'
-	os.system(f"sudo wget {ff_decrypt_old} -qO ./FirefoxDecrypt_ForPython2")
+	os.system(f"sudo wget {ff_decrypt_old} -qO {dldir}/FirefoxDecrypt_ForPython2")
 	#### END TEMP METHOD
 	
 	def is_repo_installed(repo_url):
@@ -238,6 +219,6 @@ def tool_install():
 		os.system(f'pip3 install {pkg} 1>/dev/null')
 		print(colored(f'PYPI {pkg} successfully installed by script', "green"))
 	peas_download()
-	os.system("sudo ln -s ./nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x ./nmapAutomator/nmapAutomator.sh")
+	os.system(f"sudo ln -s {dldir}/nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x {dldir}/nmapAutomator/nmapAutomator.sh")
 	print("tool_install() Completed")
 	return True
