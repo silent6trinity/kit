@@ -222,3 +222,59 @@ def tool_install():
 	os.system(f"sudo ln -s {dldir}/nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x {dldir}/nmapAutomator/nmapAutomator.sh")
 	print("tool_install() Completed")
 	return True
+
+def c2_sliver_install():
+	"""Install sliver and related files
+	This is intended to:
+		1. Install mingw-w64 as recommended in their [Server Setup in documentation](https://github.com/BishopFox/sliver/wiki/Getting-Started#server-setup)
+		2. Create a ~/c2 directory to put downloaded files into
+		3. Clone the source repo and wiki repo into their own directories in ~/c2
+		4. Download the latest binary releases to ~/c2
+
+	I made a point of wrapping everything in try except blocks since I don't want failure
+	of this code to totally grind the script to a halt. Hopefully that helps.
+	"""
+
+	print(colored(f'[*] sliver: Installing sliver...', "green"))
+
+	# Try to install mingw-w64 package for more advanced features
+	try:
+		print(colored(f'[*] sliver: Installing mingw-w64 through apt', "green"))
+		os.system(f"sudo apt install -y mingw-w64 2>/dev/null 1>/dev/null")
+	except:
+		print(colored(f'[!] Failed to install mingw-w64'), "red")
+	finally:
+		print(colored(f'[*] sliver: Installation of mingw-w64 complete', "green"))
+
+	# Make c2 directory in user's home directory
+	try:
+		print(colored(f'[*] sliver: Creating c2 directory in {homedir}', "green"))
+		os.system(f"mkdir {homedir}/c2")
+	except:
+		print(colored(f'[!] Failed to create {homedir}/c2', "red"))
+	finally:
+		print(colored(f'[*] sliver: Directory created', "green"))
+
+	# Clone source repo
+	try:
+		print(colored(f'[*] sliver: Cloning source and Wiki repos to {homedir}/c2/', "green"))
+		os.system(f"git clone --quiet https://github.com/BishopFox/sliver.git {homedir}/c2/sliver.git 2>/dev/null >/dev/null")
+		# Wiki for documentation reference
+		os.system(f"git clone --quiet https://github.com/BishopFox/sliver.wiki.git {homedir}/c2/sliver.wiki.git 2>/dev/null >/dev/null")
+	except:
+		print(colored(f'[!] Failed to clone sliver repositories from GitHub', "red"))
+	finally:
+		print(colored(f'[*] sliver: Repo cloning complete', "green"))
+
+	# Binary releases
+	try:
+		print(colored(f'[*] sliver: Downloading latest pre-compiled binary releases', "green"))
+		os.system(f"wget https://github.com/BishopFox/sliver/releases/latest/download/sliver-server_linux -qP {homedir}/c2")
+		os.system(f"wget https://github.com/BishopFox/sliver/releases/latest/download/sliver-client_linux -qP {homedir}/c2")
+		os.system(f"wget https://github.com/BishopFox/sliver/releases/latest/download/sliver-client_windows.exe -qP {homedir}/c2")
+	except:
+		print(colored(f'[!] Failed to download sliver compiled binaries from GitHub', "red"))
+	finally:
+		print(colored(f'[*] sliver: Binary download complete', "green"))
+
+	print(colored(f'[*] sliver: Installation complete.', "green"))
