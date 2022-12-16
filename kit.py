@@ -14,6 +14,7 @@ parser.add_argument("-scrub", help="Scrub the /etc/hosts file to the default con
 parser.add_argument("-shells", help="BROKEN, CURRENTLY DOES NOTHING")
 parser.add_argument("-tools", help="Installs only the tools & software")
 parser.add_argument("-jon", help="Prints a compliment to Jon")
+parser.add_argument("-c2", help="Installs malware C2 frameworks (currently sliver only)")
 parser.add_argument("-test", help="Testing for test purposes, obviously")
 #Parse the supplied arguments
 args = parser.parse_args()
@@ -26,6 +27,7 @@ if args.all:
 	msfdb_init()
 	neo4j_init()
 	#software_update()
+	#c2_sliver_install()
 elif args.shells:
 	print(f"You chose {args.shells}")
 	#shell_creation()
@@ -42,6 +44,8 @@ elif args.scrub:
 	print("scrubbing /etc/hosts")
 elif args.jon:
 	jon()
+elif args.c2:
+	c2_sliver_install()
 elif args.test:
 	test()
 else:
