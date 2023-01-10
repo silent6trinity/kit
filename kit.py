@@ -34,13 +34,13 @@ elif args.shells:
 elif args.tools:
 	print(f"You chose {args.tools}")
 	#software_update()
-	nginx_config()
 	tool_install()
 	tool_update()
 	msfdb_init()
 	neo4j_init()
-	#go_install()
+	nginx_config()
 elif args.scrub:
+	# This isn't doing anything just yet.
 	print("scrubbing /etc/hosts")
 elif args.jon:
 	jon()
