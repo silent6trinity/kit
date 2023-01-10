@@ -13,6 +13,8 @@ Automated Kit Framework for setting up a Kali testing environment
 - [ ] Check to make sure this was created from a .vmdk, not an .iso, since the .iso install is more prone to ... breaking
 - [ ] Include malicious ansible playbook(s)
 - [ ] Fix and improve the dynamic shell portion of the script
+- [ ] Move DarkOp plugins to msf
+- [ ] Make an Active Directory dir in kit - move AD tools to that directory
 - [X] Make it user dynamic, not hardcoded to the kali user
 - [X] Adjust the dir/file checks to local, rather than abs path
 - [X] Include personal custom scripts and snippets (x11, etc)
