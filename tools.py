@@ -47,6 +47,8 @@ GITHUBS = [
 	'https://github.com/RUB-NDS/PRET.git',
 	'https://github.com/SecureAuthCorp/Impacket.git',
 	'https://github.com/sosdave/KeyTabExtract.git',
+	'https://github.com/TsukiCTF/Lovely-Potato.git',
+	'https://github.com/tomnomnom/assetfinder.git'
 	'https://github.com/vulnersCom/nmap-vulners.git',
 	'https://github.com/int0x33/nc.exe',
 	'https://github.com/danielbohannon/Invoke-Obfuscation.git',
@@ -65,9 +67,9 @@ PYPI_PACKAGES = [
 
 #Holdover for now, unused
 BINARIES = [
-	'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/linpeas.sh',
-	'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEAS.bat',
-	'https://github.com/carlospolop/PEASS-ng/releases/download/20221009/winPEASany.exe',
+	'https://github.com/carlospolop/PEASS-ng/releases/download/20230108/linpeas.sh',
+	'https://github.com/carlospolop/PEASS-ng/releases/download/20230108/winPEAS.bat',
+	'https://github.com/carlospolop/PEASS-ng/releases/download/20230108/winPEASany.exe',
 	'https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_windows_amd64.exe',
 	'https://github.com/ropnop/kerbrute/releases/download/v1.0.3/kerbrute_linux_amd64',
 	'https://github.com/DominicBreuker/pspy/releases/download/v1.2.0/pspy64',
