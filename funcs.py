@@ -44,6 +44,8 @@ def msfdb_init():
 	print("MSF Database Initialized")
 	print("Creating msfconsole.rc file")
 	os.system(f' cp {kit_location}/msfconsole.rc {homedir}/.msf4/msfconsole.rc')
+        print("Here is the status of msfdb:\n")
+        os.system('sudo msfdb status')
 
 #Consider moving into environment setup
 def neo4j_init():
