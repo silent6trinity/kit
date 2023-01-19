@@ -268,3 +268,7 @@ def c2_sliver_install():
 		print(colored(f'[*] sliver: Binary download complete', "green"))
 
 	print(colored(f'[*] sliver: Installation complete.', "green"))
+	
+def hostfilereset():
+        os.system('cat hosts.txt | sudo tee /etc/hosts 1>/dev/null')
+        print('Your /etc/hosts file has been reset')
