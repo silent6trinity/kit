@@ -116,9 +116,28 @@ def sublime_install():
 	sublime = 'https://download.sublimetext.com/sublime-text_build-3211_amd64.deb'
 	os.system(f'wget {sublime} -qO {dldir}/sublime.deb ; sudo dpkg -i {dldir}/sublime.deb')
 
+def vscodium_install():
+	# Download the public GPG key for the repo and package if hasn't been downloaded already
+	if not os.path.exists('/usr/share/keyrings/vscodium-archive-keyring.gpg'):
+		print(colored("[*] Adding VSCodium GPG key to filesystem (within /usr/share/keyrings/)", "green"))
+		os.system('wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg | gpg --dearmor | sudo dd of=/usr/share/keyrings/vscodium-archive-keyring.gpg 2>/dev/null')
+	else:
+		print(colored("[*] VSCodium GPG key already downloaded", "green"))
+	# Add the repository if it hasn't been already
+	if not os.path.exists('/etc/apt/sources.list.d/vscodium.list'):
+		print(colored("[*] Adding VSCodium repository to apt repos in /etc/apt/sources.list.d/", "green"))
+		os.system('echo deb [ signed-by=/usr/share/keyrings/vscodium-archive-keyring.gpg ] https://paulcarroty.gitlab.io/vscodium-deb-rpm-repo/debs vscodium main | sudo tee /etc/apt/sources.list.d/vscodium.list 1>/dev/null')
+	else:
+		print(colored("[*] VSCodium repository already added", "green"))
+	# Refresh available packages and install codium
+	print(colored("[*] Installing VSCodium from repository", "green"))
+	os.system('sudo apt update 2>/dev/null 1>/dev/null && sudo apt install codium -y 2>/dev/null 1>/dev/null')
+	print(colored("[*] VSCodium installed", "green"))
+
 def system_update():
 	print(colored("Beginning System updates, please wait...", 'blue'))
 	sublime_install()
+	vscodium_install()
 	tool_install()
 	tool_update()
 	os.system('sudo apt install python3-pip -y')
