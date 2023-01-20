@@ -68,9 +68,10 @@ def peas_download():
 
 def grab_peas():
 	#I would like to eventually make the date regex, instead of hardcoded dates...
-	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/download/20230108/linpeas.sh'
-	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/download/20230108/winPEAS.bat'
-	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/download/20230108/winPEASany.exe'
+	# Guess what? I've got a better solution than that. Github provides a way for you to download whatever the latest is like so:
+	linpeas_sh = 'https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh'
+	winpeas_bat = 'https://github.com/carlospolop/PEASS-ng/releases/latest/download/winPEAS.bat'
+	winpeas_exe = 'https://github.com/carlospolop/PEASS-ng/releases/latest/download/winPEASany.exe'
 	os.system(f"mkdir {dldir}/PEAS")
 	os.system(f"wget {linpeas_sh} -qO {dldir}/PEAS/linpeas.sh ; sudo chmod +x {dldir}/PEAS/linpeas.sh")
 	os.system(f"wget {winpeas_bat} -qO {dldir}/PEAS/winpeas.bat")
