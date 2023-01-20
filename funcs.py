@@ -1,6 +1,7 @@
 import argparse,os,re,time
 from termcolor import colored
 from tools import APT_PACKAGES,GITHUBS,PYPI_PACKAGES
+import subprocess
 
 # sudo systemctl start postgresql
 # <check to ensure the service is running now>
@@ -44,8 +45,8 @@ def msfdb_init():
 	print("MSF Database Initialized")
 	print("Creating msfconsole.rc file")
 	os.system(f' cp {kit_location}/msfconsole.rc {homedir}/.msf4/msfconsole.rc')
-        print("Here is the status of msfdb:\n")
-        os.system('sudo msfdb status')
+	print("Here is the status of msfdb:\n")
+	os.system('sudo msfdb status')
 
 #Consider moving into environment setup
 def neo4j_init():
@@ -197,10 +198,27 @@ def tool_install():
 			#return()
 
 	# begin installing pypi & apt packages
+	# for pkg in APT_PACKAGES:
+		# os.system(f'sudo apt install {pkg} -y 1>/dev/null')
+		# os.system('sudo apt install -y 1>/dev/null')
+		# print(colored(f'APT {pkg} successfully installed by script', "green"))
+	# Here's an alternative approach to doing the package installs
+	# This way, you only call `apt` once for all the packages and then print the error output if there is any
+	apt_command_string = "sudo /usr/bin/apt install "
 	for pkg in APT_PACKAGES:
-		os.system(f'sudo apt install {pkg} -y 1>/dev/null')
-		os.system('sudo apt install -y 1>/dev/null')
-		print(colored(f'APT {pkg} successfully installed by script', "green"))
+		apt_command_string = apt_command_string + f"{pkg} "
+	apt_install_subproc = subprocess.Popen(apt_command_string.split(), shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+	apt_return_code = apt_install_subproc.wait()
+	apt_stdout,apt_stderr = apt_install_subproc.communicate()
+	# If apt returned a value that isn't zero, print stdout and stderr for the user's awareness
+	if apt_return_code != 0:
+		print(colored("[!] apt encountered an error while running. Information follows", "red"))
+		print(colored("apt return code: " + str(apt_return_code), "red"))
+		print(colored("apt stdout:\n" + apt_stdout, "white"))
+		print(colored("apt stderr:\n" + apt_stderr, "white"))
+	else:
+		print(colored("[*] apt installed packages successfully", "green"))
+
 	for pkg in PYPI_PACKAGES:
 		os.system(f'pip3 install {pkg} 1>/dev/null')
 		print(colored(f'PYPI {pkg} successfully installed by script', "green"))
