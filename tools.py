@@ -1,5 +1,6 @@
 APT_PACKAGES = [
 	'apt-transport-https',
+	'assetfinder',
 	'bat',
 	'bloodhound',
 	'chromium',
@@ -53,8 +54,9 @@ GITHUBS = [
 	'https://github.com/TsukiCTF/Lovely-Potato.git',
 	'https://github.com/tomnomnom/assetfinder.git'
 	'https://github.com/vulnersCom/nmap-vulners.git',
-	'https://github.com/int0x33/nc.exe',
+	'https://github.com/int0x33/nc.exe.git',
 	'https://github.com/danielbohannon/Invoke-Obfuscation.git',
+	'https://github.com/ZephrFish/static-tools.git',
 	'https://github.com/jeroennijhof/vncpwd.git'
 ]
 
