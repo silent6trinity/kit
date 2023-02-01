@@ -27,7 +27,7 @@ if args.all:
 	msfdb_init()
 	neo4j_init()
 	#software_update()
-	#c2_sliver_install()
+	c2_sliver_install()
 elif args.shells:
 	print(f"You chose {args.shells}")
 	#shell_creation()
@@ -39,6 +39,7 @@ elif args.tools:
 	msfdb_init()
 	neo4j_init()
 	nginx_config()
+	c2_sliver_install()
 elif args.scrub:
 	# This isn't doing anything just yet.
 	print("scrubbing /etc/hosts")
