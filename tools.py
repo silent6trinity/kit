@@ -57,6 +57,7 @@ GITHUBS = [
 	'https://github.com/int0x33/nc.exe.git',
 	'https://github.com/danielbohannon/Invoke-Obfuscation.git',
 	'https://github.com/ZephrFish/static-tools.git',
+	'https://github.com/r3motecontrol/Ghostpack-CompiledBinaries.git',
 	'https://github.com/jeroennijhof/vncpwd.git'
 ]
 
