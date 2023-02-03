@@ -4,6 +4,7 @@ Automated Kit Framework for setting up a Kali testing environment
 
 #TODO
 
+- [ ] Add a cheat sheet into the individual (future) folders with generic command syntax, etc
 - [ ] Grab all of the services & ports we started, dump to the user (neo4j, smb, web, etc) (netstat -tano | grep -i "<port>"), etc.
 - [X] Ensure that the Metasploit database service is up & running, provide info to the user
 - [ ] Maybe do a search to check if any errors or packages werent able to be added during the script
