@@ -19,6 +19,7 @@ APT_PACKAGES = [
 	'snmpcheck',
 	'sshoot',
 	'sshuttle',
+	'sshpass',
 	'subfinder',
 	'sublime-text',
 	'tilix',
