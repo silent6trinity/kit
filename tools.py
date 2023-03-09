@@ -8,6 +8,7 @@ APT_PACKAGES = [
 	'enum4linux',
 	'gobuster',
 	'golang-go',
+	'hollywood',
 	'htop',
 	'jxplorer',
 	'metasploit-framework',
