@@ -17,7 +17,6 @@ APT_PACKAGES = [
 	'seclists',
 	'smbmap',
 	'snmpcheck',
-	'sshoot',
 	'sshuttle',
 	'sshpass',
 	'subfinder',
